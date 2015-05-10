@@ -11,58 +11,48 @@
         android:layout_height="match_parent"/>
 
 
-    <View
-        android:id="@+id/flexible_space"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/primary" />
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        app:contentInsetRight="0dp"
-        android:title=""/>
+        android:background="@color/primary"
+        android:orientation="vertical"
+        android:elevation="6dp">
 
-    <RelativeLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/flexible_space_height"
-        android:layout_marginTop="?actionBarSize">
-
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:id="@+id/linearLayout"
-            android:layout_alignParentTop="true"
-            android:layout_alignLeft="@+id/sliding_tabs"
-            android:layout_alignStart="@+id/sliding_tabs"
-            android:layout_marginTop="18dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/russellbrand"/>
-            <TextView
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            app:contentInsetRight="0dp"
+            android:title=""/>
+
+
+            <LinearLayout
+                android:id="@+id/flexible_space"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Russel Brand"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_height="@dimen/flexible_space_height"
                 android:gravity="center"
-                android:layout_marginTop="12dp"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/russellbrand"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Russel Brand"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@android:color/white"/>
+            </LinearLayout>
+
 
         <com.feisty.SlidingTabLayout
             android:id="@+id/sliding_tabs"
-            android:background="#E1242A"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"/>
-
-    </RelativeLayout>
-
+    </LinearLayout>
 </FrameLayout>

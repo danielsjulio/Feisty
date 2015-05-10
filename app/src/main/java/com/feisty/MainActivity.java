@@ -39,9 +39,6 @@ public class MainActivity extends ActionBarActivity {
     @InjectView(R.id.sliding_tabs)
     SlidingTabLayout mSlidingTabLayout;
 
-    @InjectView(R.id.header)
-    RelativeLayout mHeader;
-
     @InjectView(R.id.flexible_space)
     View mFlexibleSpaceView;
 
@@ -68,14 +65,6 @@ public class MainActivity extends ActionBarActivity {
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setViewPager(mViewPager);
 
-        mFlexibleSpaceHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_height);
-
-        int flexibleSpaceAndToolbarHeight = mFlexibleSpaceHeight + getActionBarSize();
-        mFlexibleSpaceView.getLayoutParams().height = flexibleSpaceAndToolbarHeight;
-        mFlexibleSpaceView.setLayoutParams(mFlexibleSpaceView.getLayoutParams());
-
-
-//        findViewById(R.id.body).setPadding(0, flexibleSpaceAndToolbarHeight, 0, 0);
 
     }
 
