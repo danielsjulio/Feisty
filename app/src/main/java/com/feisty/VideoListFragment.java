@@ -25,7 +25,7 @@ public class VideoListFragment extends Fragment {
 
 
     @InjectView(R.id.list)
-    RecyclerView mRecyclerView;
+    CustomRecyclerView mRecyclerView;
 
     /**
      * Use this factory method to create a new instance of
@@ -65,6 +65,7 @@ public class VideoListFragment extends Fragment {
         videoListAdapter.getVideos().add(new Video());
         videoListAdapter.getVideos().add(new Video());
         mRecyclerView.setAdapter(videoListAdapter);
+
         return view;
 
     }

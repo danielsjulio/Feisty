@@ -1,137 +1,126 @@
 package com.feisty;
 
-import android.app.Activity;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.view.ViewGroup;
 
-import java.util.Locale;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
+import com.github.florent37.materialviewpager.MaterialViewPager;
 
 public class MainActivity extends ActionBarActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private MaterialViewPager mViewPager;
 
-
-    @InjectView(R.id.pager)
-    ViewPager mViewPager;
-
-    @InjectView(R.id.toolbar)
-    Toolbar mToolbarView;
-
-    @InjectView(R.id.sliding_tabs)
-    SlidingTabLayout mSlidingTabLayout;
-
-    @InjectView(R.id.flexible_space)
-    View mFlexibleSpaceView;
-
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
-    int mFlexibleSpaceHeight;
+    private DrawerLayout mDrawer;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
-        setSupportActionBar(mToolbarView);
-
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
-        mSlidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
+        mViewPager = (MaterialViewPager) findViewById(R.id.materialViewPager);
 
-        Resources res = getResources();
-        mSlidingTabLayout.setSelectedIndicatorColors(res.getColor(R.color.tab_selected_strip));
-        mSlidingTabLayout.setDistributeEvenly(true);
-        mSlidingTabLayout.setViewPager(mViewPager);
+        mViewPager.getToolbar().setLogo(R.drawable.russellbrand);
+        toolbar = mViewPager.getToolbar();
+//        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        if (toolbar != null) {
+            setTitle("Russel Brand");
+            setSupportActionBar(toolbar);
 
-    }
+            final ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setDisplayShowHomeEnabled(false);
+                actionBar.setDisplayShowTitleEnabled(true);
+                actionBar.setDisplayUseLogoEnabled(false);
+                actionBar.setHomeButtonEnabled(false);
+            }
+        }
 
-    protected int getActionBarSize() {
-        TypedValue typedValue = new TypedValue();
-        int[] textSizeAttr = new int[]{R.attr.actionBarSize};
-        int indexOfAttrTextSize = 0;
-        TypedArray a = this.obtainStyledAttributes(typedValue.data, textSizeAttr);
-        int actionBarSize = a.getDimensionPixelSize(indexOfAttrTextSize, -1);
-        a.recycle();
-        return actionBarSize;
+//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, 0, 0);
+//        mDrawer.setDrawerListener(mDrawerToggle);
+
+        mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+
+            int oldPosition = -1;
+
+            @Override
+            public Fragment getItem(int position) {
+                switch (position) {
+                    //case 0:
+                    //    return RecyclerViewFragment.newInstance();
+                    //case 1:
+                    //    return ScrollFragment.newInstance();
+                    //case 2:
+                    //    return ListViewFragment.newInstance();
+                    //case 3:
+                    //    return WebViewFragment.newInstance();
+                    default:
+                        return RecyclerViewFragment.newInstance();
+                }
+            }
+
+            @Override
+            public void setPrimaryItem(ViewGroup container, int position, Object object) {
+                super.setPrimaryItem(container, position, object);
+
+                //only if position changed
+                if(position == oldPosition)
+                    return;
+                oldPosition = position;
+
+                int color = 0;
+                String imageUrl = "";
+                switch (position){
+                    case 0:
+                        imageUrl = "http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2014/06/wallpaper_51.jpg";
+                        color = getResources().getColor(R.color.primary);
+                        break;
+                    case 1:
+                        imageUrl = "https://fs01.androidpit.info/a/63/0e/android-l-wallpapers-630ea6-h900.jpg";
+                        color = getResources().getColor(R.color.blue);
+                        break;
+                }
+
+                final int fadeDuration = 400;
+                mViewPager.setImageUrl(imageUrl,fadeDuration);
+                mViewPager.setColor(color,fadeDuration);
+
+            }
+
+            @Override
+            public int getCount() {
+                return 2;
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                switch (position){
+                    case 0:
+                        return "Videos";
+                    case 1:
+                        return "Series";
+                }
+                return "";
+            }
+        });
+        mViewPager.getViewPager().setOffscreenPageLimit(mViewPager.getViewPager().getAdapter().getCount());
+        mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+//        mDrawerToggle.syncState();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position){
-                case 0:
-                case 1:
-                    return VideoListFragment.newInstance();
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return "videos".toUpperCase(l);
-                case 1:
-                    return "series".toLowerCase(l);
-            }
-            return null;
-        }
-    }
 }

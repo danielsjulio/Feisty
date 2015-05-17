@@ -2,4 +2,14 @@
 <resources>
     <color name="tab_selected_strip">@android:color/white</color>
     <color name="primary">#E1242A</color>
+
+
+    <color name="blue">#303F9F</color>
+
+    <color name="accent_color">@color/primary</color>
+    <color name="colorPrimary">@color/primary</color>
+    <color name="colorPrimaryDark">#ffb02025</color>
+    <color name="statusBarColor">@color/colorPrimaryDark</color>
+    <color name="navigationBarColor">@android:color/black</color>
+    <color name="drawerArrowColor">@android:color/white</color>
 </resources>
