@@ -3,10 +3,8 @@ package com.feisty;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
@@ -16,8 +14,6 @@ public class MainActivity extends ActionBarActivity {
 
     private MaterialViewPager mViewPager;
 
-    private DrawerLayout mDrawer;
-    private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar toolbar;
 
     @Override
@@ -30,7 +26,6 @@ public class MainActivity extends ActionBarActivity {
 
         mViewPager.getToolbar().setLogo(R.drawable.russellbrand);
         toolbar = mViewPager.getToolbar();
-//        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if (toolbar != null) {
             setTitle("Russel Brand");
@@ -46,27 +41,13 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, 0, 0);
-//        mDrawer.setDrawerListener(mDrawerToggle);
-
         mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
             int oldPosition = -1;
 
             @Override
             public Fragment getItem(int position) {
-                switch (position) {
-                    //case 0:
-                    //    return RecyclerViewFragment.newInstance();
-                    //case 1:
-                    //    return ScrollFragment.newInstance();
-                    //case 2:
-                    //    return ListViewFragment.newInstance();
-                    //case 3:
-                    //    return WebViewFragment.newInstance();
-                    default:
-                        return RecyclerViewFragment.newInstance();
-                }
+                return RecyclerViewFragment.newInstance();
             }
 
             @Override
@@ -106,9 +87,9 @@ public class MainActivity extends ActionBarActivity {
             public CharSequence getPageTitle(int position) {
                 switch (position){
                     case 0:
-                        return "Videos";
+                        return getString(R.string.tabbar_item_videos);
                     case 1:
-                        return "Series";
+                        return getString(R.string.tabbar_item_series);
                 }
                 return "";
             }
