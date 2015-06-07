@@ -4,13 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends BaseActivity {
 
     private MaterialViewPager mViewPager;
 
@@ -28,7 +27,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar = mViewPager.getToolbar();
 
         if (toolbar != null) {
-            setTitle("Russel Brand");
+            setTitle(getString(R.string.app_name));
             setSupportActionBar(toolbar);
 
             final ActionBar actionBar = getSupportActionBar();
@@ -96,12 +95,6 @@ public class MainActivity extends ActionBarActivity {
         });
         mViewPager.getViewPager().setOffscreenPageLimit(mViewPager.getViewPager().getAdapter().getCount());
         mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-//        mDrawerToggle.syncState();
     }
 
 }
