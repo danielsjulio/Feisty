@@ -1,9 +1,11 @@
-package com.feisty;
+package com.feisty.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.feisty.R;
 
 import java.util.List;
 

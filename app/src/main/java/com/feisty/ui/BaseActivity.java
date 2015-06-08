@@ -1,4 +1,4 @@
-package com.feisty;
+package com.feisty.ui;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;

@@ -1,4 +1,4 @@
-package com.feisty;
+package com.feisty.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
+import com.feisty.R;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 
 public class MainActivity extends BaseActivity {
