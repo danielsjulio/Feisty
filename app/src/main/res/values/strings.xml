@@ -9,5 +9,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tabbar.item.videos">Videos</string>
     <string name="tabbar.item.series">Series</string>
+    <string name="youtube_api_key">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
 
 </resources>
