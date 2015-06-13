@@ -12,14 +12,14 @@ import java.util.List;
 /**
  * Created by florentchampigny on 24/04/15.
  */
-public class TestRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     List<Object> contents;
 
     static final int TYPE_HEADER = 0;
     static final int TYPE_CELL = 1;
 
-    public TestRecyclerViewAdapter(List<Object> contents) {
+    public VideoFeedRecyclerViewAdapter(List<Object> contents) {
         this.contents = contents;
     }
 

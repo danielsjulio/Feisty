@@ -2,7 +2,6 @@ package com.feisty.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,9 +17,10 @@ public class ChannelList extends RestContainer {
         return channels;
     }
 
-    class Channel {
+    public class Channel {
         String id;
         Snippet snippet;
+
         @SerializedName("brandingSettings")
         ContentDetails contentDetails;
 
@@ -37,10 +37,10 @@ public class ChannelList extends RestContainer {
         }
     }
 
-    class Snippet {
+    public class Snippet {
         String title;
         String description;
-        Date publishedAt;
+        /*Date publishedAt;*/
         Thumbnails thumbnails;
 
         public String getTitle() {
@@ -51,52 +51,33 @@ public class ChannelList extends RestContainer {
             return description;
         }
 
-        public Date getPublishedAt() {
+        /*public Date getPublishedAt() {
             return publishedAt;
-        }
+        }*/
 
         public Thumbnails getThumbnails() {
             return thumbnails;
         }
 
-        class Thumbnails {
-            @SerializedName("default")
-            Thumbnail regular;
-            Thumbnail medium;
-            Thumbnail high;
-
-            public Thumbnail getRegular() {
-                return regular;
-            }
-
-            public Thumbnail getMedium() {
-                return medium;
-            }
-
-            public Thumbnail getHigh() {
-                return high;
-            }
-
-            class Thumbnail {
-                String url;
-
-                public String getUrl() {
-                    return url;
-                }
-            }
-        }
     }
 
 
 
-    class ContentDetails {
+    public class ContentDetails {
         Channel channel;
+
+        @SerializedName("image")
+        Images images;
+
+        public Images getImage() {
+            return images;
+        }
 
         public Channel getChannel() {
             return channel;
         }
 
-        class Channel {
+        public class Channel {
             String title;
             String description;
             String profileColor;
@@ -114,7 +95,8 @@ public class ChannelList extends RestContainer {
             }
         }
 
-        class Images {
+        public class Images {
+
             String bannerImageUrl;
             String bannerMobileImageUrl;
             String bannerTabletLowImageUrl;
@@ -187,4 +169,5 @@ public class ChannelList extends RestContainer {
             }
         }
     }
+
 }

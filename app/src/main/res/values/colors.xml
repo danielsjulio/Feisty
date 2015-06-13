@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#E1242A</color>
-
-    <color name="blue">#303F9F</color>
-
-    <color name="accent_color">@color/primary</color>
-    <color name="colorPrimary">@color/primary</color>
-    <color name="colorPrimaryDark">#ffb02025</color>
-    <color name="statusBarColor">@color/colorPrimaryDark</color>
-    <color name="navigationBarColor">@android:color/black</color>
+    <color name="primary">#C2303B</color>
+    <color name="primary_dark">#771d24</color>
+    <color name="accent_color">#fff000</color>
 </resources>

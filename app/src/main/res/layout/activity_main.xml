@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.github.florent37.materialviewpager.MaterialViewPager
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/materialViewPager"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:viewpager_logo="@layout/header_logo_2"
-    app:viewpager_pagerTitleStrip="@layout/material_view_pager_pagertitlestrip_standard"
-    app:viewpager_logoMarginTop="70dp"
-    app:viewpager_color="@color/primary"
-    app:viewpager_headerHeight="200dp"
-    app:viewpager_headerAlpha="0.6"
-    app:viewpager_hideLogoWithFade="true"
-    app:viewpager_hideToolbarAndTitle="false"
-    app:viewpager_enableToolbarElevation="true"
-    app:viewpager_parallaxHeaderFactor="1.5"
-    app:viewpager_headerAdditionalHeight="20dp"/>
+    android:layout_height="match_parent">
+
+    <com.github.florent37.materialviewpager.MaterialViewPager
+        android:id="@+id/materialViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:viewpager_logo="@layout/header_logo_2"
+        app:viewpager_pagerTitleStrip="@layout/material_view_pager_pagertitlestrip_standard"
+        app:viewpager_logoMarginTop="70dp"
+        app:viewpager_color="@color/primary"
+        app:viewpager_headerHeight="200dp"
+        app:viewpager_headerAlpha="0.6"
+        app:viewpager_hideLogoWithFade="true"
+        app:viewpager_hideToolbarAndTitle="false"
+        app:viewpager_enableToolbarElevation="true"
+        app:viewpager_parallaxHeaderFactor="1.5"
+        app:viewpager_headerAdditionalHeight="20dp"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_gravity="center"
+        tools:visible="false"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </RelativeLayout>
+</FrameLayout>

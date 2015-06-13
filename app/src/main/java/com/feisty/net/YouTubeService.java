@@ -1,6 +1,7 @@
 package com.feisty.net;
 
 import com.feisty.model.ChannelList;
+import com.feisty.model.VideoList;
 
 import java.nio.channels.Channel;
 
@@ -18,4 +19,7 @@ public interface YouTubeService {
     @GET("/youtube/v3/channels?part=snippet,brandingSettings,contentDetails")
     void getChannel(@Query("id") String id, Callback<ChannelList> cb);
 
+    //https://www.googleapis.com/youtube/v3/search?key=AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo&channelId=UC7IcJI8PUf5Z3zKxnZvTBog
+    @GET("/youtube/v3/search?part=snippet,id&order=date&maxResults=20")
+    void getVideos(@Query("channelId") String channelId, Callback<VideoList> cb);
 }

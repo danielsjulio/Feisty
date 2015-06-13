@@ -9,12 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.feisty.App;
 import com.feisty.R;
+import com.feisty.model.VideoList;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by florentchampigny on 24/04/15.
@@ -46,9 +52,21 @@ public class RecyclerViewFragment extends Fragment {
         for (int i = 0; i < 100; ++i)
             mContentItems.add(new Object());
 
-        mAdapter = new RecyclerViewMaterialAdapter(new TestRecyclerViewAdapter(mContentItems));
+        mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedRecyclerViewAdapter(mContentItems));
         mRecyclerView.setAdapter(mAdapter);
 
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
+
+
+        /*((App) getActivity().getApplication()).getYoutubeService(getActivity()).getVideos(getString(R.string.youtube_channel_id), new Callback<VideoList>() {
+            @Override
+            public void success(VideoList videoList, Response response) {
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });*/
     }
 }

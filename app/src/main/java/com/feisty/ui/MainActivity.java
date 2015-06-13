@@ -1,24 +1,39 @@
 package com.feisty.ui;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.feisty.R;
 import com.feisty.model.ChannelList;
+import com.feisty.model.VideoList;
+import com.feisty.net.YouTubeService;
 import com.github.florent37.materialviewpager.MaterialViewPager;
+import com.squareup.picasso.Picasso;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements Callback<ChannelList> {
 
-    private MaterialViewPager mViewPager;
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    @InjectView(R.id.progress_bar)
+    View mProgressBar;
+
+    @InjectView(R.id.materialViewPager)
+    MaterialViewPager mViewPager;
 
     private Toolbar toolbar;
 
@@ -26,17 +41,14 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
 
-
-        mViewPager = (MaterialViewPager) findViewById(R.id.materialViewPager);
-
-        mViewPager.getToolbar().setLogo(R.drawable.russellbrand);
         toolbar = mViewPager.getToolbar();
+
 
         if (toolbar != null) {
             setTitle(getString(R.string.app_name));
             setSupportActionBar(toolbar);
-
             final ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayHomeAsUpEnabled(false);
@@ -51,17 +63,31 @@ public class MainActivity extends BaseActivity {
         mViewPager.getViewPager().setOffscreenPageLimit(mViewPager.getViewPager().getAdapter().getCount());
         mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
 
-        getApp().getYoutubeService(this).getChannel("UC7IcJI8PUf5Z3zKxnZvTBog", new Callback<ChannelList>() {
-            @Override
-            public void success(ChannelList channelList, Response response) {
+        YouTubeService youTubeService = getApp().getYoutubeService(this);
+        youTubeService.getChannel(getString(R.string.youtube_channel_id), this);
+    }
 
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                //TODO(gil): Handle errors properly
-            }
-        });
+    @Override
+    public void success(ChannelList channelList, Response response) {
+        ChannelList.Channel channel = channelList.getChannels().get(0);
+        toolbar.setTitle(channel.getSnippet().getTitle());
+
+        mProgressBar.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
+        mViewPager.setColor(getResources().getColor(R.color.primary), 400);
+
+        Log.d(TAG, "Thumbnail: " + channel.getContentDetails().getImage().getBannerImageUrl());
+        mViewPager.setImageUrl(channel.getContentDetails().getImage().getBannerTvLowImageUrl(), 400);
+        ImageView thumbnail = (ImageView) mViewPager.findViewById(R.id.toolbar_logo);
+        Picasso.with(this).load(channel.getSnippet().getThumbnails().getHigh().getUrl()).into(thumbnail);
+
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+        //TODO(gil): Handle errors properly
+        Log.d(TAG, "failure" + error.getMessage());
     }
 
 
@@ -101,8 +127,8 @@ public class MainActivity extends BaseActivity {
             }
 
             final int fadeDuration = 400;
-            mViewPager.setImageUrl(imageUrl,fadeDuration);
-            mViewPager.setColor(color,fadeDuration);
+//            mViewPager.setImageUrl(imageUrl,fadeDuration);
+//            mViewPager.setColor(color,fadeDuration);
 
         }
 

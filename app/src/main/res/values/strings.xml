@@ -10,5 +10,6 @@
     <string name="tabbar.item.videos">Videos</string>
     <string name="tabbar.item.series">Series</string>
     <string name="youtube_api_key">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
+    <string name="youtube_channel_id">UCBJycsmduvYEL83R_U4JriQ</string>
 
 </resources>

@@ -35,7 +35,7 @@ public class App extends Application {
         if(mYoutubeService == null){
             /*HttpsTrustManager.allowAllSSL();*/
             Gson gson = new GsonBuilder()
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+//                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                     .registerTypeAdapter(Date.class, new DateTypeAdapter())
 //                    .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
                     .create();
