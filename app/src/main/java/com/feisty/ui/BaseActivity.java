@@ -11,17 +11,6 @@ import com.feisty.App;
  */
 public class BaseActivity extends ActionBarActivity {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-
-    }
-
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
-    }
-
     protected App getApp(){
         return (App) getApplication();
     }

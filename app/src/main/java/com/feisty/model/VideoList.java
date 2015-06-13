@@ -10,29 +10,25 @@ import java.util.List;
 public class VideoList extends RestContainer {
 
     @SerializedName("items")
-    List<Video> videos;
-
-    public List<Video> getVideos() {
-        return videos;
-    }
+    public List<Video> videos;
 
     public class Video {
-        Id id;
-        Snippet snippet;
+        public Id id;
+        public Snippet snippet;
 
         public class Id {
-            String king;
-            String videoId;
+            public String king;
+            public String videoId;
         }
 
         public class Snippet {
             //TODO: fix gson date coversion
-//            String publishedAt;
-            String channelId;
-            String title;
-            String description;
-            Thumbnails thumbnails;
-            String channelTittle;
+//            public String publishedAt;
+            public String channelId;
+            public String title;
+            public String description;
+            public Thumbnails thumbnails;
+            public String channelTittle;
         }
     }
 }

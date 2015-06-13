@@ -70,17 +70,17 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
 
     @Override
     public void success(ChannelList channelList, Response response) {
-        ChannelList.Channel channel = channelList.getChannels().get(0);
-        toolbar.setTitle(channel.getSnippet().getTitle());
+        ChannelList.Channel channel = channelList.channels.get(0);
+        toolbar.setTitle(channel.snippet.title);
 
         mProgressBar.setVisibility(View.GONE);
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setColor(getResources().getColor(R.color.primary), 400);
 
-        Log.d(TAG, "Thumbnail: " + channel.getContentDetails().getImage().getBannerImageUrl());
-        mViewPager.setImageUrl(channel.getContentDetails().getImage().getBannerTvLowImageUrl(), 400);
+        Log.d(TAG, "Thumbnail: " + channel.contentDetails.images.bannerImageUrl);
+        mViewPager.setImageUrl(channel.contentDetails.images.bannerTvLowImageUrl, 400);
         ImageView thumbnail = (ImageView) mViewPager.findViewById(R.id.toolbar_logo);
-        Picasso.with(this).load(channel.getSnippet().getThumbnails().getHigh().getUrl()).into(thumbnail);
+        Picasso.with(this).load(channel.snippet.thumbnails.high.url).into(thumbnail);
 
     }
 

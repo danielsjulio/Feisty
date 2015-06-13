@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.feisty.net.YouTubeService;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
@@ -23,7 +22,7 @@ import retrofit.converter.GsonConverter;
  */
 public class App extends Application {
 
-    YouTubeService mYoutubeService;
+    private static YouTubeService sYoutubeService;
 
     @Override
     public void onCreate() {
@@ -32,7 +31,7 @@ public class App extends Application {
 
 
     public YouTubeService getYoutubeService(final Context context){
-        if(mYoutubeService == null){
+        if(sYoutubeService == null){
             /*HttpsTrustManager.allowAllSSL();*/
             Gson gson = new GsonBuilder()
 //                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -58,9 +57,9 @@ public class App extends Application {
                     })
                     .build();
 
-            mYoutubeService = restAdapter.create(YouTubeService.class);
+            sYoutubeService = restAdapter.create(YouTubeService.class);
         }
 
-        return mYoutubeService;
+        return sYoutubeService;
     }
 }

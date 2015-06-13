@@ -7,27 +7,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Thumbnails {
     @SerializedName("default")
-    Thumbnail regular;
-    Thumbnail medium;
-    Thumbnail high;
-
-    public Thumbnail getRegular() {
-        return regular;
-    }
-
-    public Thumbnail getMedium() {
-        return medium;
-    }
-
-    public Thumbnail getHigh() {
-        return high;
-    }
+    public Thumbnail regular;
+    public Thumbnail medium;
+    public Thumbnail high;
 
     public class Thumbnail {
-        String url;
+        public String url;
 
-        public String getUrl() {
-            return url;
-        }
     }
 }

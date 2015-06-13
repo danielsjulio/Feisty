@@ -5,29 +5,12 @@ package com.feisty.model;
  */
 public class RestContainer {
 
-    String kind;
+    public String kind;
+    public PageInfo pageInfo;
 
-    PageInfo pageInfo;
+    public class PageInfo {
+        public int totalResults;
 
-    public String getKind() {
-        return kind;
-    }
-
-    public PageInfo getPageInfo() {
-        return pageInfo;
-    }
-
-    class PageInfo {
-        int totalResults;
-
-        int resultsPerPage;
-
-        public int getTotalResults() {
-            return totalResults;
-        }
-
-        public int getResultsPerPage() {
-            return resultsPerPage;
-        }
+        public int resultsPerPage;
     }
 }
