@@ -15,9 +15,6 @@ import com.feisty.model.VideoList;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -27,10 +24,9 @@ import retrofit.client.Response;
  */
 public class RecyclerViewFragment extends Fragment {
 
+    private static final String TAG = RecyclerViewFragment.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-
-    private List<Object> mContentItems = new ArrayList<>();
 
     public static RecyclerViewFragment newInstance() {
         return new RecyclerViewFragment();
@@ -49,24 +45,18 @@ public class RecyclerViewFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        for (int i = 0; i < 100; ++i)
-            mContentItems.add(new Object());
-
-        mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedRecyclerViewAdapter(mContentItems));
-        mRecyclerView.setAdapter(mAdapter);
-
-        MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
-
-
-        /*((App) getActivity().getApplication()).getYoutubeService(getActivity()).getVideos(getString(R.string.youtube_channel_id), new Callback<VideoList>() {
+        ((App) getActivity().getApplication()).getYoutubeService(getActivity()).getVideos(getString(R.string.youtube_channel_id), new Callback<VideoList>() {
             @Override
             public void success(VideoList videoList, Response response) {
+                mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedRecyclerViewAdapter(getActivity(), videoList));
+                mRecyclerView.setAdapter(mAdapter);
+                MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
             }
 
             @Override
             public void failure(RetrofitError error) {
 
             }
-        });*/
+        });
     }
 }

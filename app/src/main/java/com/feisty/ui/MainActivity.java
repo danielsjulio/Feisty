@@ -1,6 +1,5 @@
 package com.feisty.ui;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 
 import com.feisty.R;
 import com.feisty.model.ChannelList;
-import com.feisty.model.VideoList;
 import com.feisty.net.YouTubeService;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.squareup.picasso.Picasso;
@@ -44,7 +42,6 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         ButterKnife.inject(this);
 
         toolbar = mViewPager.getToolbar();
-
 
         if (toolbar != null) {
             setTitle(getString(R.string.app_name));
