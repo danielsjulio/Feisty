@@ -27,7 +27,7 @@ public class VideoList extends RestContainer {
 
         public class Snippet {
             //TODO: fix gson date coversion
-//            public String publishedAt;
+            public String publishedAt;
             public String channelId;
             public String title;
             public String description;

@@ -12,7 +12,9 @@ import android.widget.ImageView;
 
 import com.feisty.R;
 import com.feisty.model.ChannelList;
+import com.feisty.net.API;
 import com.feisty.net.YouTubeService;
+import com.feisty.sync.SyncUtils;
 import com.feisty.ui.transformation.RoundedTransformation;
 import com.feisty.utils.Logger;
 import com.github.florent37.materialviewpager.MaterialViewPager;
@@ -36,11 +38,15 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
 
     private Toolbar toolbar;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+
+        SyncUtils.createSyncAccount(this);
 
         toolbar = mViewPager.getToolbar();
 
@@ -61,7 +67,7 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         mViewPager.getViewPager().setOffscreenPageLimit(mViewPager.getViewPager().getAdapter().getCount());
         mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
 
-        YouTubeService youTubeService = getApp().getYoutubeService(this);
+        YouTubeService youTubeService = API.getYoutubeService(this);
         youTubeService.getChannel(getString(R.string.youtube_channel_id), this);
     }
 

@@ -9,9 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.feisty.App;
 import com.feisty.R;
 import com.feisty.model.VideoList;
+import com.feisty.net.API;
 import com.feisty.utils.Logger;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
@@ -46,7 +46,7 @@ public class RecyclerViewFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        ((App) getActivity().getApplication()).getYoutubeService(getActivity()).getVideos(getString(R.string.youtube_channel_id), new Callback<VideoList>() {
+        API.getYoutubeService(getActivity()).getVideos(getString(R.string.youtube_channel_id), new Callback<VideoList>() {
             @Override
             public void success(VideoList videoList, Response response) {
                 mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedRecyclerViewAdapter(getActivity(), videoList));

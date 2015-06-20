@@ -14,4 +14,6 @@
     <string name="youtube_channel_id">UCBJycsmduvYEL83R_U4JriQ</string>
     <string name="title_activity_video_detail">VideoDetailActivity</string>
 
+    <string name="account_type" translatable="false">com.feisty</string>
+    <string name="content_authority" translatable="false">com.feisty</string>
 </resources>
