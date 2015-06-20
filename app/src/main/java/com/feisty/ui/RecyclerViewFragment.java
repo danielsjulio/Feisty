@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.feisty.App;
 import com.feisty.R;
 import com.feisty.model.VideoList;
+import com.feisty.utils.Logger;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
 
@@ -24,7 +25,7 @@ import retrofit.client.Response;
  */
 public class RecyclerViewFragment extends Fragment {
 
-    private static final String TAG = RecyclerViewFragment.class.getSimpleName();
+    private static final Logger LOG = Logger.create();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 

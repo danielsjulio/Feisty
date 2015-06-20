@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,6 +13,8 @@ import android.widget.ImageView;
 import com.feisty.R;
 import com.feisty.model.ChannelList;
 import com.feisty.net.YouTubeService;
+import com.feisty.ui.transformation.RoundedTransformation;
+import com.feisty.utils.Logger;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.squareup.picasso.Picasso;
 
@@ -25,7 +26,7 @@ import retrofit.client.Response;
 
 public class MainActivity extends BaseActivity implements Callback<ChannelList> {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final Logger LOG = Logger.create();
 
     @InjectView(R.id.progress_bar)
     View mProgressBar;
@@ -74,17 +75,21 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setColor(getResources().getColor(R.color.primary), 400);
 
-        Log.d(TAG, "Thumbnail: " + channel.contentDetails.images.bannerImageUrl);
+        LOG.d("Thumbnail: " + channel.contentDetails.images.bannerImageUrl);
         mViewPager.setImageUrl(channel.contentDetails.images.bannerTvLowImageUrl, 400);
         ImageView thumbnail = (ImageView) mViewPager.findViewById(R.id.toolbar_logo);
-        Picasso.with(this).load(channel.snippet.thumbnails.high.url).into(thumbnail);
+
+        Picasso.with(this)
+                .load(channel.snippet.thumbnails.high.url)
+                .transform(new RoundedTransformation(1000, 0))
+                .into(thumbnail);
 
     }
 
     @Override
     public void failure(RetrofitError error) {
         //TODO(gil): Handle errors properly
-        Log.d(TAG, "failure" + error.getMessage());
+        LOG.d("failure" + error.getMessage());
     }
 
 

@@ -1,6 +1,8 @@
 package com.feisty.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,7 +90,10 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
         }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        @InjectView(R.id.card_view)
+        CardView card;
 
         @InjectView(R.id.video_list_image)
         ImageView thumbnail;
@@ -102,6 +107,13 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this, itemView);
+            card.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(v.getContext(), VideoDetailActivity.class);
+            v.getContext().startActivity(intent);
         }
     }
 }
