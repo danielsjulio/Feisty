@@ -18,11 +18,14 @@ public interface YouTubeService {
     void getChannel(@Query("id") String id, Callback<ChannelList> cb);
 
     //https://www.googleapis.com/youtube/v3/search?key=AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo&channelId=UC7IcJI8PUf5Z3zKxnZvTBog
-    @GET("/youtube/v3/search?part=snippet,id&order=date&maxResults=20")
+    @GET("/youtube/v3/search?part=snippet,id&order=date&maxResults=50")
     void getVideos(@Query("channelId") String channelId, Callback<VideoList> cb);
 
-    @GET("/youtube/v3/search?part=snippet,id&order=date&maxResults=20")
+    @GET("/youtube/v3/search?part=snippet,id&order=date&maxResults=50")
     VideoList getVideos(@Query("channelId") String channelId);
+
+    @GET("/youtube/v3/search?part=snippet,id&order=date&maxResults=50")
+    VideoList getVideos(@Query("channelId") String channelId, @Query("pageToken") String nextPageToken);
 
     //https://www.googleapis.com/youtube/v3/videos?key=AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo&id=7V-fIGMDsmE&part=contentDetails,id,snippet,statistics
     @GET("/youtube/v3/videos")

@@ -166,18 +166,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             throws IOException, XmlPullParserException, RemoteException,
             OperationApplicationException, ParseException {
 
+        ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         final ContentResolver contentResolver = getContext().getContentResolver();
 
-        VideoList videoList = API.getYoutubeService(getContext()).getVideos(getContext().getString(R.string.youtube_channel_id));
-
-        ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
-
-        // Build hash table of incoming entries
         HashMap<String, VideoList.Video> videoMap = new HashMap<>();
-        for (VideoList.Video e : videoList.videos) {
-            videoMap.put(e.id.videoId, e);
-        }
+        String nextPageToken = null;
+        do {
+            VideoList videoList;
+            if (nextPageToken == null) {
+                videoList = API.getYoutubeService(getContext()).getVideos(getContext().getString(R.string.youtube_channel_id));
+            } else {
+                videoList = API.getYoutubeService(getContext()).getVideos(getContext().getString(R.string.youtube_channel_id), nextPageToken);
+            }
+
+            nextPageToken = videoList.nextPageToken;
+            // Build hash table of incoming entries
+            for (VideoList.Video e : videoList.videos) {
+                videoMap.put(e.id.videoId, e);
+            }
+        } while (nextPageToken != null);
 
         // Get list of all items
         Log.i(TAG, "Fetching local entries for merge");

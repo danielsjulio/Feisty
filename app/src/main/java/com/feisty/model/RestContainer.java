@@ -8,6 +8,8 @@ public class RestContainer {
     public String kind;
     public PageInfo pageInfo;
 
+    public String nextPageToken;
+
     public class PageInfo {
         public int totalResults;
 
