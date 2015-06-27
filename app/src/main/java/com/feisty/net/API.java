@@ -8,7 +8,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Protocol;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import retrofit.RequestInterceptor;
@@ -29,11 +31,13 @@ public class API {
             /*HttpsTrustManager.allowAllSSL();*/
             Gson gson = new GsonBuilder()
 //                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+//                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 //                    .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
                     .create();
 
             OkHttpClient client = new OkHttpClient();
+            client.setProtocols(Arrays.asList(Protocol.HTTP_1_1));//to stop java.io.IOException: stream was reset: CANCEL error
             client.networkInterceptors().add(new StethoInterceptor());
 //            client.interceptors().add(new AuthInterceptor(context));
 

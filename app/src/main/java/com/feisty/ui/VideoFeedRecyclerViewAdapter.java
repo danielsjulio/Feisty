@@ -77,20 +77,26 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
     public void onBindViewHolder(ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case TYPE_HEADER:
-
+                final VideoList.Video video = mVideo.videos.get(position);
                 Picasso.with(mContext)
-                        .load(mVideo.videos.get(position).snippet.thumbnails.high.url)
+                        .load(video.snippet.thumbnails.high.url)
                         .into(holder.thumbnail);
-                holder.description.setText(mVideo.videos.get(position).snippet.description);
-                holder.title.setText(mVideo.videos.get(position).snippet.title);
+                holder.description.setText(video.snippet.description);
+                holder.title.setText(video.snippet.title);
+                holder.card.setOnClickListener(new View.OnClickListener() {
 
+                    @Override
+                    public void onClick(View v) {
+                        VideoDetailActivity.startActivity(v.getContext(), video.id.videoId, video.snippet.title, video.snippet.description);
+                    }
+                });
                 break;
             case TYPE_CELL:
                 break;
         }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         @InjectView(R.id.card_view)
         CardView card;
@@ -107,13 +113,7 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this, itemView);
-            card.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(v.getContext(), VideoDetailActivity.class);
-            v.getContext().startActivity(intent);
-        }
     }
 }

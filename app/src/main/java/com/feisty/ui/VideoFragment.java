@@ -1,5 +1,8 @@
 package com.feisty.ui;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.GestureDetector;
@@ -25,6 +28,11 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
 
     private static final Logger LOG = Logger.create();
 
+
+    private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
+            ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            : ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+
     @Nullable
     private YouTubePlayer player;
 
@@ -34,9 +42,10 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
     private GestureDetector mGestureDetector;
 
     public static VideoFragment newInstance(String videoId) {
-        VideoFragment fragment = new VideoFragment();
         Bundle bundle = new Bundle();
         bundle.putString(VideoDetailActivity.KEY_VIDEO_ID, videoId);
+        VideoFragment fragment = new VideoFragment();
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -44,8 +53,8 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-//        String videoId = bundle.getString(VideoDetailActivity.KEY_VIDEO_ID);
-        setVideoId("6uLL418S1GQ");
+        String videoId = bundle.getString(VideoDetailActivity.KEY_VIDEO_ID);
+        setVideoId(videoId);
         initialize(getString(R.string.youtube_player_api_key), this);
     }
 
@@ -130,6 +139,26 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
         return container;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+//                getActivity().getWindow().getDecorView().setSystemUiVisibility(FULL);
+                if(mFullscreen && visibility == View.VISIBLE && player != null) {
+                    if (player.isPlaying()) {
+                        player.pause();
+                    } else {
+                        player.play();
+                    }
+                }
+            }
+        });
+    }
+
+
     /*private void disableChildViews(View view){
         view.setClickable(false);
         view.setFocusable(false);
@@ -168,28 +197,34 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
         player.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
             @Override
             public void onFullscreen(boolean isFullscreen) {
-                player.setPlayerStyle(isFullscreen ? YouTubePlayer.PlayerStyle.DEFAULT : YouTubePlayer.PlayerStyle.CHROMELESS);
                 mFullscreen = isFullscreen;
+                VideoDetailActivity videoDetailActivity = ((VideoDetailActivity) getActivity());
+                videoDetailActivity.doLayout(isFullscreen);
             }
         });
+
+        int controlFlags = player.getFullscreenControlFlags();
+        getActivity().setRequestedOrientation(PORTRAIT_ORIENTATION);
+        controlFlags |= YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE;
+        player.setFullscreenControlFlags(controlFlags);
+
         mControlsOverlay.setYoutubePlayer(player);
         player.setPlaybackEventListener(mControlsOverlay);
+        player.setPlayerStateChangeListener(mControlsOverlay);
         player.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
+        player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
+
         if (!restored && mVideoId != null) {
             player.loadVideo(mVideoId);
         }
-        //TODO: Handle back button when video is fullscreen
-        /*((MainActivity) getActivity()).setOnBack(new MainActivity.OnBack() {
-            @Override
-            public boolean allowedToGoBack() {
-                if(mFullscreen && player != null){
-                    setFullScreen(false);
-                    return false;
-                }
-                return true;
-            }
-        });*/
+    }
 
+    public boolean onBackPressed(){
+        if(mFullscreen && player != null){
+            setFullScreen(false);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -199,7 +234,6 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
 
     public void setFullScreen(boolean fullScreen){
         if(player != null) {
-            player.setFullscreenControlFlags(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_SYSTEM_UI);
             player.setFullscreen(fullScreen);
         }
     }

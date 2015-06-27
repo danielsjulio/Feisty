@@ -10,7 +10,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -20,6 +19,8 @@ import com.feisty.R;
 import com.feisty.utils.Logger;
 import com.google.android.youtube.player.YouTubePlayer;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -27,7 +28,8 @@ import butterknife.OnClick;
 /**
  * Created by Gil on 15/06/15.
  */
-public class VideoControlsView extends FrameLayout implements YouTubePlayer.PlaybackEventListener, SeekBar.OnSeekBarChangeListener {
+public class VideoControlsView extends FrameLayout implements
+        YouTubePlayer.PlaybackEventListener, SeekBar.OnSeekBarChangeListener, YouTubePlayer.PlayerStateChangeListener {
 
     private static final Logger LOG = Logger.create();
 
@@ -54,6 +56,11 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
 
     @InjectView(R.id.seek_bar)
     SeekBar mSeekBar;
+
+    @InjectView(R.id.video_controls_length_label)
+    TextView mLengthLabel;
+
+    boolean isBuffering;
 
     public VideoControlsView(Context context) {
         super(context);
@@ -83,14 +90,29 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
         setVisibility(View.GONE);
     }
 
+    private String formatTime(int milliseconds){
+        return String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
+                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
+    }
+
     public void show(){
-        mBufferingProgressBar.setVisibility(GONE);
-        mControlsContainer.setVisibility(VISIBLE);
-        setAlpha(0);
+
+        if(mYoutubePlayer != null){
+            mSeekBarLabel.setText(formatTime(mYoutubePlayer.getCurrentTimeMillis()));
+            mLengthLabel.setText(formatTime(mYoutubePlayer.getDurationMillis()));
+            mSeekBar.setMax(mYoutubePlayer.getDurationMillis());
+            mSeekBar.setProgress(mYoutubePlayer.getCurrentTimeMillis());
+        }
+
+//        mBufferingProgressBar.setVisibility(GONE);
         setVisibility(VISIBLE);
-        setScaleX(1.2F);
-        setScaleY(1.2F);
-        animate()
+        mControlsContainer.setAlpha(0);
+        mControlsContainer.setVisibility(VISIBLE);
+        mControlsContainer.setScaleX(1.2F);
+        mControlsContainer.setScaleY(1.2F);
+        mControlsContainer.animate()
                 .alpha(1)
                 .scaleX(1F)
                 .scaleY(1F)
@@ -104,9 +126,9 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        setScaleX(1F);
-                        setScaleY(1F);
-                        setAlpha(1);
+                        mControlsContainer.setScaleX(1F);
+                        mControlsContainer.setScaleY(1F);
+                        mControlsContainer.setAlpha(1);
                     }
 
                     @Override
@@ -121,14 +143,17 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
                 })
                 .start();
 
-        /*mPauseBtn.setAlpha(0);
+        mPlayBtn.setVisibility(GONE);
+        /*mPauseBtn.setVisibility(VISIBLE);
+        mPauseBtn.setAlpha(0);
         mPauseBtn.setScaleX(0.8F);
         mPauseBtn.setScaleY(0.8F);
         mPauseBtn.animate()
+                .setStartDelay(200L)
                 .alpha(1)
                 .scaleX(1.2F)
                 .scaleY(1.2F)
-                .setDuration(200L)
+                .setDuration(1000L)
                 .setInterpolator(new DecelerateInterpolator())
                 .setListener(new Animator.AnimatorListener() {
                     @Override
@@ -138,7 +163,7 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mPauseBtn.setAlpha(0);
+//                        mPauseBtn.setAlpha(0);
                     }
 
                     @Override
@@ -155,21 +180,16 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
     }
 
     public void hide(){
-        mBufferingProgressBar.setVisibility(GONE);
-        mControlsContainer.setVisibility(VISIBLE);
-        setVisibility(GONE);
+//        mBufferingProgressBar.setVisibility(GONE);
+        mControlsContainer.setVisibility(GONE);
+        if(!isBuffering)
+            setVisibility(GONE);
 
     }
 
     @Override
     public void onPlaying() {
         LOG.d("onPlaying");
-        if(mSeekBar.getTag() != null && mYoutubePlayer != null) {
-            mSeekBar.setMax(mYoutubePlayer.getDurationMillis());
-            mSeekBar.setTag(true);
-        }
-        if(mYoutubePlayer != null)
-            mSeekBar.setProgress(mYoutubePlayer.getCurrentTimeMillis());
         hide();
     }
 
@@ -187,14 +207,17 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
 
     @Override
     public void onBuffering(boolean b) {
-        LOG.d("onBuffering");
+        LOG.d("onBuffering(" + b + ")");
+        isBuffering = b;
+        setVisibility(b ? VISIBLE : GONE);
         mBufferingProgressBar.setVisibility(b ? VISIBLE : GONE);
     }
 
     @Override
-    public void onSeekTo(int i) {
+    public void onSeekTo(int milliseconds) {
         LOG.d("onSeekTo");
-        mSeekBar.setProgress(i);
+        mSeekBarLabel.setText(formatTime(milliseconds));
+        mSeekBar.setProgress(milliseconds);
     }
 
     public void setYoutubePlayer(YouTubePlayer youtubePlayer) {
@@ -203,7 +226,7 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if(mYoutubePlayer != null      )
+        if(mYoutubePlayer != null && fromUser)
             this.mYoutubePlayer.seekToMillis(progress);
     }
 
@@ -214,12 +237,46 @@ public class VideoControlsView extends FrameLayout implements YouTubePlayer.Play
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
+        if(mYoutubePlayer != null)
+            mYoutubePlayer.play();
     }
 
     @OnClick(R.id.fullscreen)
     public void setFullscreen(View view){
         if (mYoutubePlayer != null)
             mYoutubePlayer.setFullscreen(true);
+    }
+
+    @Override
+    public void onLoading() {
+        LOG.d("onLoading");
+        onBuffering(true);
+    }
+
+    @Override
+    public void onLoaded(String videoId) {
+        LOG.d("onLoaded");
+        onBuffering(false);
+    }
+
+    @Override
+    public void onAdStarted() {
+        LOG.d("onAdStarted");
+
+    }
+
+    @Override
+    public void onVideoStarted() {
+        LOG.d("onVideoStarted");
+    }
+
+    @Override
+    public void onVideoEnded() {
+
+    }
+
+    @Override
+    public void onError(YouTubePlayer.ErrorReason errorReason) {
+
     }
 }

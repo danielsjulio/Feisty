@@ -28,7 +28,9 @@
         <activity
             android:name=".ui.VideoDetailActivity"
             android:label="@string/title_activity_video_detail"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="sensor"
+            android:configChanges="keyboardHidden|orientation|screenSize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.feisty.ui.MainActivity" />

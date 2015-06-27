@@ -1,6 +1,7 @@
 package com.feisty.net;
 
 import com.feisty.model.ChannelList;
+import com.feisty.model.CommentList;
 import com.feisty.model.VideoList;
 
 import retrofit.Callback;
@@ -30,4 +31,8 @@ public interface YouTubeService {
     //https://www.googleapis.com/youtube/v3/videos?key=AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo&id=7V-fIGMDsmE&part=contentDetails,id,snippet,statistics
     @GET("/youtube/v3/videos")
     void getVideo(@Query("id") String id, Callback<VideoList> cb);
+
+//    GET https://www.googleapis.com/youtube/v3/commentThreads?part=id%2Creplies%2Csnippet&videoId=kETN114A4IE&key={YOUR_API_KEY}
+    @GET("/youtube/v3/commentThreads?part=id%2Creplies%2Csnippet")
+    void getComments(@Query("videoId") String videoId, Callback<CommentList> cb);
 }
