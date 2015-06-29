@@ -11,7 +11,7 @@
     <string name="tabbar.item.series">Series</string>
     <string name="youtube_api_key">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
     <string name="youtube_player_api_key">AIzaSyCBFcpgmI0cx6sJJBLxq9vCtXOKaXR4GXw</string>
-    <string name="youtube_channel_id">UCBJycsmduvYEL83R_U4JriQ</string>
+    <string name="youtube_channel_id">UCddiUEpeqJcYeBxX1IVBKvQ</string>
     <string name="title_activity_video_detail">VideoDetailActivity</string>
 
     <string name="account_type" translatable="false">com.feisty</string>

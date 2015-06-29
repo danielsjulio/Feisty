@@ -4,34 +4,24 @@
     android:orientation="vertical"
     tools:context="com.feisty.ui.VideoDetailActivity">
 
-    <fragment
+    <FrameLayout
+        android:id="@+id/video_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="com.feisty.ui.VideoFragment"
         tools:layout="@layout/custom_video_overlay" />
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/comments_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Example"
-                android:textSize="27sp"
-                android:layout_margin="16dp"
-                android:textColor="@android:color/black"/>
+        android:layout_height="match_parent"
+        tools:visibility="gone"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Example"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textSize="@dimen/text_size_medium"/>
-        </LinearLayout>
-    </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

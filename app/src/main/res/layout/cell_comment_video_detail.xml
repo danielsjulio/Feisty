@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/comment_thumbnail"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <TextView
+        android:id="@+id/comment_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/comment_thumbnail"
+        android:layout_marginLeft="16dp"
+        tools:text="Gil Julio"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/comment_text"
+        android:layout_below="@id/comment_username"
+        android:layout_alignLeft="@id/comment_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        tools:text="That's an awesome idea"/>
+
+
+</RelativeLayout>
