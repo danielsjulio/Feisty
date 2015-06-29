@@ -30,4 +30,5 @@ public interface YouTubeService {
     //https://www.googleapis.com/youtube/v3/videos?key=AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo&id=7V-fIGMDsmE&part=contentDetails,id,snippet,statistics
     @GET("/youtube/v3/videos")
     void getVideo(@Query("id") String id, Callback<VideoList> cb);
+
 }

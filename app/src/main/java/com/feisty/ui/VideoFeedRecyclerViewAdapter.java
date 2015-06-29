@@ -2,6 +2,7 @@ package com.feisty.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.feisty.R;
+import com.feisty.model.Vid;
 import com.feisty.model.VideoList;
+import com.feisty.sync.Contacts;
 import com.feisty.utils.Logger;
 import com.squareup.picasso.Picasso;
 
@@ -28,14 +31,56 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
 
     VideoList mVideo;
     Context mContext;
+    Cursor mCursor;
 
     static final int TYPE_HEADER = 0;
     static final int TYPE_CELL = 1;
 
-    public VideoFeedRecyclerViewAdapter(Context context, VideoList video) {
-        this.mVideo = video;
+    public VideoFeedRecyclerViewAdapter(Context context, Cursor cursor) {
+        this.mCursor = cursor;
         this.mContext = context;
     }
+
+
+    ///////////////////////
+    @Override
+    public int getItemCount() {
+        return (mCursor == null) ? 0 : mCursor.getCount();
+    }
+
+
+    public void changeCursor(Cursor cursor) {
+        Cursor old = swapCursor(cursor);
+        if (old != null) {
+            old.close();
+        }
+    }
+
+    public Cursor swapCursor(Cursor cursor) {
+        if (mCursor == cursor) {
+            return null;
+        }
+        Cursor oldCursor = mCursor;
+        this.mCursor = cursor;
+        if (cursor != null) {
+            this.notifyDataSetChanged();
+        }
+        return oldCursor;
+    }
+
+    private Vid getItem(int position) {
+        mCursor.moveToPosition(position);
+
+        Vid vid = new Vid();
+        vid.setTitle(mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_TITLE)));
+        vid.setDescription(mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_SHORT_DESCRIPTION)));
+        vid.setImageUrl(mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_IMAGE_URL)));
+        vid.setPublishedAt(mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_PUBLISHED)));
+
+        return vid;
+        // Load data from dataCursor and return it...
+    }
+    ////////////////////////////////
 
     @Override
     public int getItemViewType(int position) {
@@ -45,10 +90,10 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return mVideo.videos.size();
-    }
+//    @Override
+//    public int getItemCount() {
+//        return mVideo.videos.size();
+//    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -78,11 +123,12 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
         switch (getItemViewType(position)) {
             case TYPE_HEADER:
 
+                Vid vid = getItem(position);
                 Picasso.with(mContext)
-                        .load(mVideo.videos.get(position).snippet.thumbnails.high.url)
+                        .load(vid.getImageUrl())
                         .into(holder.thumbnail);
-                holder.description.setText(mVideo.videos.get(position).snippet.description);
-                holder.title.setText(mVideo.videos.get(position).snippet.title);
+                holder.description.setText(vid.getDescription());
+                holder.title.setText(vid.getTitle());
 
                 break;
             case TYPE_CELL:
