@@ -10,6 +10,16 @@ import com.facebook.stetho.Stetho;
  */
 public class App extends Application {
 
+
+    //TODO(gil): Install crashlytics
+    //TODO(daniel): Store playlists offline
+    //TODO(gil): Error screens
+    //TODO(daniel): Change main feed to use channel data
+    //TODO(gil): Creating a new profile should be seamless
+    //TODO(gil): Investigate problem loading comments
+    //TODO(gil: Notifications
+
+
     private static Context mContext;
 
     public App(){

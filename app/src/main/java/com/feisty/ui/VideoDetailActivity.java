@@ -2,8 +2,6 @@ package com.feisty.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -20,7 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.feisty.R;
-import com.feisty.model.CommentList;
+import com.feisty.model.youtube.CommentList;
+import com.feisty.model.Video;
 import com.feisty.net.API;
 import com.feisty.ui.listeners.InfinityScrollListener;
 import com.feisty.ui.transformation.RoundedTransformation;
@@ -36,14 +35,12 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class VideoDetailActivity extends ActionBarActivity implements Callback<CommentList>,
+public class VideoDetailActivity extends BaseActivity implements Callback<CommentList>,
         InfinityScrollListener.ScrollResultListener {
 
     private static final Logger LOG = Logger.create();
 
-    public static final String KEY_VIDEO_ID = "VIDEO_ID";
-    public static final String KEY_VIDEO_NAME = "VIDEO_NAME";
-    public static final String KEY_VIDEO_DESCRIPTION = "VIDEO_DESCRIPTION";
+    public static final String KEY_VIDEO = "VIDEO";
 
     @InjectView(R.id.comments_recyclerview)
     RecyclerView mCommentsRecyclerView;
@@ -51,19 +48,17 @@ public class VideoDetailActivity extends ActionBarActivity implements Callback<C
     @InjectView(R.id.video_container)
     FrameLayout mContainer;
 
-    private VideoFragment mVideoFragment;
+    private YouTubeVideoFragment mYouTubeVideoFragment;
 
     private CommentsRecyclerViewAdapter mCommentsRecyclerViewAdapter;
 
-    private String mVideoId, mVideoName, mVideoDescription;
+    private Video mVideo;
 
     private InfinityScrollListener mInfinityScrollListener;
 
-    public static void startActivity(Context context, String id, String name, String description){
+    public static void startActivity(Context context, Video video){
         Intent intent = new Intent(context, VideoDetailActivity.class);
-        intent.putExtra(KEY_VIDEO_ID, id);
-        intent.putExtra(KEY_VIDEO_NAME, name);
-        intent.putExtra(KEY_VIDEO_DESCRIPTION, description);
+        intent.putExtra(KEY_VIDEO, video);
         context.startActivity(intent);
     }
 
@@ -74,23 +69,27 @@ public class VideoDetailActivity extends ActionBarActivity implements Callback<C
         ButterKnife.inject(this);
 
         Intent intent = getIntent();
-        mVideoId = intent.getStringExtra(KEY_VIDEO_ID);
-        mVideoName = intent.getStringExtra(KEY_VIDEO_NAME);
-        mVideoDescription = intent.getStringExtra(KEY_VIDEO_DESCRIPTION);
+        mVideo = (Video) intent.getSerializableExtra(KEY_VIDEO);
 
         if (savedInstanceState == null){
-            mVideoFragment = VideoFragment.newInstance(mVideoId);
+            mYouTubeVideoFragment = YouTubeVideoFragment.newInstance(mVideo.id);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.video_container, mVideoFragment, "video_frag");
+            fragmentTransaction.add(R.id.video_container, mYouTubeVideoFragment, "video_frag");
             fragmentTransaction.commit();
 
             mCommentsRecyclerViewAdapter = new CommentsRecyclerViewAdapter();
             mCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             mCommentsRecyclerView.setAdapter(mCommentsRecyclerViewAdapter);
             mInfinityScrollListener = new InfinityScrollListener(this);
-            mCommentsRecyclerView.setOnScrollListener(mInfinityScrollListener);
+            mCommentsRecyclerView.addOnScrollListener(mInfinityScrollListener);
             loadMore(null);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        mCommentsRecyclerView.removeOnScrollListener(mInfinityScrollListener);
+        super.onDestroy();
     }
 
     public void doLayout(boolean isFullscreen) {
@@ -101,7 +100,7 @@ public class VideoDetailActivity extends ActionBarActivity implements Callback<C
 
     @Override
     public void onBackPressed() {
-        if (mVideoFragment.onBackPressed()){
+        if (mYouTubeVideoFragment.onBackPressed()){
             return;
         }
         super.onBackPressed();
@@ -109,21 +108,30 @@ public class VideoDetailActivity extends ActionBarActivity implements Callback<C
 
     @Override
     public void success(CommentList commentList, Response response) {
+        mInfinityScrollListener.setNextPageToken(commentList.nextPageToken);
+        mInfinityScrollListener.finishedLoad();
+
         int startRange = mCommentsRecyclerViewAdapter.getItemCount();
         mCommentsRecyclerViewAdapter.getComments().addAll(commentList.comments);
         mCommentsRecyclerViewAdapter.notifyItemRangeInserted(startRange, commentList.comments.size());
-        mInfinityScrollListener.setNextPageToken(commentList.nextPageToken);
     }
 
+
+    //TODO: Handle the error properly
     @Override
     public void failure(RetrofitError error) {
+        mInfinityScrollListener.finishedLoad();
         LOG.d(error.getMessage());
         Toast.makeText(VideoDetailActivity.this, "Failed to load comments", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void loadMore(String nextPageToken) {
-        API.getYoutubeService(this).getComments(mVideoId, this);
+        if(nextPageToken != null) {
+            API.getYoutubeService(this).getComments(mVideo.id, nextPageToken, this);
+        } else {
+            API.getYoutubeService(this).getComments(mVideo.id, this);
+        }
     }
 
     class CommentsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -157,21 +165,38 @@ public class VideoDetailActivity extends ActionBarActivity implements Callback<C
             switch (holder.getItemViewType()){
                 case HEADER_VIEW_TYPE:
                     HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-                    headerViewHolder.mNameView.setText(mVideoName);
-                    headerViewHolder.mDescriptionView.setText(Html.fromHtml(mVideoDescription));
+                    headerViewHolder.mNameView.setText(mVideo.title);
+                    headerViewHolder.mDescriptionView.setText(Html.fromHtml(mVideo.description));
                     break;
                 case COMMENT_VIEW_TYPE:
                     CommentList.Comment comment = comments.get(position - 1);
-                    CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
-                    commentViewHolder.mTextView.setText(Html.fromHtml(comment.snippet.topLevelComment.snippet.textDisplay.trim()).toString());
-                    commentViewHolder.mUsernameView.setText(comment.snippet.topLevelComment.snippet.authorDisplayName);
-                    Picasso.with(VideoDetailActivity.this)
-                            .load(comment.snippet.topLevelComment.snippet.authorProfileImageUrl)
-                            .transform(new RoundedTransformation(1000, 0))
-                            .into(commentViewHolder.mThumbnailView);
+                    CommentViewHolder commentViewHolder = bindCommentBox(holder, comment.snippet.topLevelComment);
+                    if(comment.replies != null) {
+                        for (CommentList.Comment.Snippet.TopLevelComment reply : comment.replies.comments) {
+                            RecyclerView.ViewHolder view = onCreateViewHolder(null, COMMENT_VIEW_TYPE);
+                            view = bindCommentBox(view, reply);
+                            commentViewHolder.mRepliesContainer.addView(view.itemView);
+                        }
+                    }
                     break;
             }
+        }
 
+        /**
+         * Binds the comment to the view. Used for the replies alsod
+         * @param holder to be bound
+         * @param comment
+         * @return the view holder
+         */
+        private CommentViewHolder bindCommentBox(RecyclerView.ViewHolder holder, CommentList.Comment.Snippet.TopLevelComment comment){
+            CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
+            commentViewHolder.mTextView.setText(Html.fromHtml(comment.snippet.textDisplay.trim()).toString());
+            commentViewHolder.mUsernameView.setText(comment.snippet.authorDisplayName);
+            Picasso.with(VideoDetailActivity.this)
+                    .load(comment.snippet.authorProfileImageUrl)
+                    .transform(new RoundedTransformation(1000, 0))
+                    .into(commentViewHolder.mThumbnailView);
+            return commentViewHolder;
         }
 
         @Override
@@ -210,6 +235,9 @@ public class VideoDetailActivity extends ActionBarActivity implements Callback<C
 
             @InjectView(R.id.comment_text)
             TextView mTextView;
+
+            @InjectView(R.id.reply_comments)
+            LinearLayout mRepliesContainer;
 
             public CommentViewHolder(View itemView) {
                 super(itemView);

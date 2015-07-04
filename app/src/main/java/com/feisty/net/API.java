@@ -51,6 +51,7 @@ public class API {
                         @Override
                         public void intercept(RequestFacade request) {
                             request.addQueryParam("key", context.getString(R.string.youtube_api_key));
+//                            request.addQueryParam("channelId", context.getString(R.string.youtube_channel_id));
                         }
                     })
                     .build();

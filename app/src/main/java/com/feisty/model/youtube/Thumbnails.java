@@ -1,4 +1,4 @@
-package com.feisty.model;
+package com.feisty.model.youtube;
 
 import com.google.gson.annotations.SerializedName;
 

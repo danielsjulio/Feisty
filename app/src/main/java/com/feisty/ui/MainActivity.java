@@ -1,6 +1,5 @@
 package com.feisty.ui;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,11 +7,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.feisty.R;
-import com.feisty.model.ChannelList;
+import com.feisty.model.youtube.ChannelList;
 import com.feisty.net.API;
 import com.feisty.net.YouTubeService;
 import com.feisty.sync.SyncUtils;
@@ -38,8 +36,6 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
     MaterialViewPager mViewPager;
 
     private Toolbar toolbar;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +78,7 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setColor(getResources().getColor(R.color.primary), 400);
 
-        LOG.d("Thumbnail: " + channel.contentDetails.images.bannerImageUrl);
-        mViewPager.setImageUrl(channel.contentDetails.images.bannerTvLowImageUrl, 400);
+        mViewPager.setImageUrl(channel.brandingSettings.images.bannerTvLowImageUrl, 400);
         ImageView thumbnail = (ImageView) mViewPager.findViewById(R.id.toolbar_logo);
 
         Picasso.with(this)
@@ -101,7 +96,7 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
 
     class FragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-        int oldPosition = -1;
+//        int oldPosition = -1;
 
         public FragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -109,10 +104,16 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
 
         @Override
         public Fragment getItem(int position) {
-            return RecyclerViewFragment.newInstance();
+            switch (position) {
+                case 0:
+                    return VideosListFragment.newInstance();
+                case 1:
+                    return SeriesListFragment.newInstance();
+            }
+            return null;
         }
 
-        @Override
+        /*@Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
 
@@ -121,24 +122,7 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
                 return;
             oldPosition = position;
 
-            int color = 0;
-            String imageUrl = "";
-            switch (position){
-                case 0:
-                    imageUrl = "http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2014/06/wallpaper_51.jpg";
-                    color = getResources().getColor(R.color.primary);
-                    break;
-                case 1:
-                    imageUrl = "https://fs01.androidpit.info/a/63/0e/android-l-wallpapers-630ea6-h900.jpg";
-                    color = getResources().getColor(R.color.blue);
-                    break;
-            }
-
-            final int fadeDuration = 400;
-//            mViewPager.setImageUrl(imageUrl,fadeDuration);
-//            mViewPager.setColor(color,fadeDuration);
-
-        }
+        }*/
 
         @Override
         public int getCount() {

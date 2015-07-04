@@ -22,7 +22,7 @@ import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapte
 /**
  * Created by florentchampigny on 24/04/15.
  */
-public class RecyclerViewFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class VideosListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final Logger LOG = Logger.create();
     private RecyclerView mRecyclerView;
@@ -35,13 +35,13 @@ public class RecyclerViewFragment extends Fragment implements LoaderManager.Load
             Contacts.Video.COLUMN_NAME_IMAGE_URL,
             Contacts.Video.COLUMN_NAME_PUBLISHED};
 
-    public static RecyclerViewFragment newInstance() {
-        return new RecyclerViewFragment();
+    public static VideosListFragment newInstance() {
+        return new VideosListFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recyclerview, container, false);
+        return inflater.inflate(R.layout.fragment_list_video, container, false);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class RecyclerViewFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         LOG.d("Got here");
-        mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedRecyclerViewAdapter(getActivity(), data));
+        mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedCursorAdapter(getActivity(), data));
         mRecyclerView.setAdapter(mAdapter);
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
 

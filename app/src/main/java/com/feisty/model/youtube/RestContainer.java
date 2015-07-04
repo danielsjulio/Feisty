@@ -1,4 +1,4 @@
-package com.feisty.model;
+package com.feisty.model.youtube;
 
 /**
  * Created by Gil on 08/06/15.

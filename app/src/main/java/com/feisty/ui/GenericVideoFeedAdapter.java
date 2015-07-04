@@ -1,7 +1,11 @@
 package com.feisty.ui;
 
+/**
+ * Created by Gil on 03/07/15.
+ */
+
 import android.content.Context;
-import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,31 +15,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.feisty.R;
-import com.feisty.model.VideoList;
+import com.feisty.model.Video;
 import com.feisty.utils.Logger;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by florentchampigny on 24/04/15.
- */
-public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeedRecyclerViewAdapter.ViewHolder> {
-
+public abstract class GenericVideoFeedAdapter extends RecyclerView.Adapter<GenericVideoFeedAdapter.ViewHolder> {
 
     private static final Logger LOG = Logger.create();
-
-    VideoList mVideo;
-    Context mContext;
 
     static final int TYPE_HEADER = 0;
     static final int TYPE_CELL = 1;
 
-    public VideoFeedRecyclerViewAdapter(Context context, VideoList video) {
-        this.mVideo = video;
+    Context mContext;
+
+    public GenericVideoFeedAdapter(Context context) {
         this.mContext = context;
     }
+
+    @Override
+    public abstract int getItemCount();
+
+    public abstract Video getItem(int position);
 
     @Override
     public int getItemViewType(int position) {
@@ -43,11 +46,6 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
             default:
                 return TYPE_HEADER;
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mVideo.videos.size();
     }
 
     @Override
@@ -77,17 +75,19 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
     public void onBindViewHolder(ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case TYPE_HEADER:
-                final VideoList.Video video = mVideo.videos.get(position);
-                Picasso.with(mContext)
-                        .load(video.snippet.thumbnails.high.url)
-                        .into(holder.thumbnail);
-                holder.description.setText(video.snippet.description);
-                holder.title.setText(video.snippet.title);
-                holder.card.setOnClickListener(new View.OnClickListener() {
 
+                final Video video = getItem(position);
+                Picasso.with(mContext)
+                        .load(video.imageUrl)
+                        .into(holder.thumbnail);
+                holder.description.setText(video.description);
+                holder.title.setText(video.title);
+
+
+                holder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        VideoDetailActivity.startActivity(v.getContext(), video.id.videoId, video.snippet.title, video.snippet.description);
+                        VideoDetailActivity.startActivity(mContext, video);
                     }
                 });
                 break;
@@ -96,7 +96,7 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
         }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder  {
 
         @InjectView(R.id.card_view)
         CardView card;
@@ -114,6 +114,5 @@ public class VideoFeedRecyclerViewAdapter extends RecyclerView.Adapter<VideoFeed
             super(itemView);
             ButterKnife.inject(this, itemView);
         }
-
     }
 }

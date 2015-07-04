@@ -1,7 +1,6 @@
 package com.feisty.ui;
 
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,11 +22,12 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
  * Created by Gil on 06/02/15.
  */
 
-public final class VideoFragment extends YouTubePlayerSupportFragment
+public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         implements YouTubePlayer.OnInitializedListener {
 
     private static final Logger LOG = Logger.create();
 
+    private static final String KEY_VIDEO_ID = "video_id";
 
     private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
             ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -41,10 +41,10 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
     private VideoControlsView mControlsOverlay;
     private GestureDetector mGestureDetector;
 
-    public static VideoFragment newInstance(String videoId) {
+    public static YouTubeVideoFragment newInstance(String videoId) {
         Bundle bundle = new Bundle();
-        bundle.putString(VideoDetailActivity.KEY_VIDEO_ID, videoId);
-        VideoFragment fragment = new VideoFragment();
+        bundle.putString(KEY_VIDEO_ID, videoId);
+        YouTubeVideoFragment fragment = new YouTubeVideoFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -53,7 +53,7 @@ public final class VideoFragment extends YouTubePlayerSupportFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        String videoId = bundle.getString(VideoDetailActivity.KEY_VIDEO_ID);
+        String videoId = bundle.getString(KEY_VIDEO_ID);
         setVideoId(videoId);
         initialize(getString(R.string.youtube_player_api_key), this);
     }

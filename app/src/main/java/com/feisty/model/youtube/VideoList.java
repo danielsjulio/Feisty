@@ -1,4 +1,4 @@
-package com.feisty.model;
+package com.feisty.model.youtube;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -13,7 +13,7 @@ public class VideoList extends RestContainer {
     public List<Video> videos;
 
     public class Video {
-        public Id id;
+        public String id;
         public Snippet snippet;
         public String kind;
 
@@ -33,6 +33,12 @@ public class VideoList extends RestContainer {
             public String description;
             public Thumbnails thumbnails;
             public String channelTittle;
+            public ResourceId resourceId;
+
+            public class ResourceId {
+                public String kind;
+                public String videoId;
+            }
         }
 
         public class Statistics {

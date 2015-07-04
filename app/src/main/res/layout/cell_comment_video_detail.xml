@@ -28,5 +28,12 @@
         android:layout_marginTop="6dp"
         tools:text="That's an awesome idea"/>
 
+    <LinearLayout
+        android:id="@+id/reply_comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/comment_text"
+        android:orientation="vertical"
+        android:layout_marginLeft="20dp"/>
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.feisty.model;
+package com.feisty.model.youtube;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -51,7 +51,8 @@ public class CommentList extends RestContainer {
 
         public class Replies {
 
-            public List<Comment> comments;
+            public List<Snippet.TopLevelComment> comments;
         }
     }
+
 }

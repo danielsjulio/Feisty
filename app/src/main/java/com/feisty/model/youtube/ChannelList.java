@@ -1,4 +1,4 @@
-package com.feisty.model;
+package com.feisty.model.youtube;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,7 +17,7 @@ public class ChannelList extends RestContainer {
         public String id;
         public Snippet snippet;
 
-        @SerializedName("brandingSettings")
+        public BrandingSettings brandingSettings;
         public ContentDetails contentDetails;
     }
 
@@ -30,6 +30,15 @@ public class ChannelList extends RestContainer {
     }
 
     public class ContentDetails {
+        public RelatedPlaylists relatedPlaylists;
+
+        public class RelatedPlaylists {
+            public String uploads;
+            public String likes;
+        }
+    }
+
+    public class BrandingSettings {
         public Channel channel;
 
         @SerializedName("image")
@@ -58,6 +67,7 @@ public class ChannelList extends RestContainer {
             public String bannerTvMediumImageUrl;
             public String bannerTvHighImageUrl;
         }
+
     }
 
 }

@@ -90,7 +90,7 @@ public class VideoControlsView extends FrameLayout implements
         setVisibility(View.GONE);
     }
 
-    private String formatTime(int milliseconds){
+    private static String formatTime(int milliseconds){
         return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(milliseconds),
                 TimeUnit.MILLISECONDS.toSeconds(milliseconds) -

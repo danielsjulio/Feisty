@@ -5,15 +5,14 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tabbar.item.videos">Videos</string>
     <string name="tabbar.item.series">Series</string>
     <string name="youtube_api_key">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
     <string name="youtube_player_api_key">AIzaSyCBFcpgmI0cx6sJJBLxq9vCtXOKaXR4GXw</string>
-    <string name="youtube_channel_id">UCddiUEpeqJcYeBxX1IVBKvQ</string>
+    <string name="youtube_channel_id">UC1KPy3cAAj0i0RIFC_SzjMg</string>
     <string name="title_activity_video_detail">VideoDetailActivity</string>
 
     <string name="account_type" translatable="false">com.feisty</string>
     <string name="content_authority" translatable="false">com.feisty</string>
+    <string name="title_activity_series">Series</string>
 </resources>
