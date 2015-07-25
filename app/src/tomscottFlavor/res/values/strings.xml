@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">Feisty</string>
+    <string name="app_name">Tom scott</string>
     <string name="action_settings">Settings</string>
 
     <string name="tabbar_item_videos">Videos</string>
     <string name="tabbar_item_series">Series</string>
     <string name="youtube_api_key">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
     <string name="youtube_player_api_key">AIzaSyCBFcpgmI0cx6sJJBLxq9vCtXOKaXR4GXw</string>
+    <string name="youtube_channel_id">UCBa659QWEk1AI4Tg--mrJ2A</string>
 
-    <string name="account_type" translatable="false">com.feisty</string>
-    <string name="content_authority" translatable="false">com.feisty</string>
+    <string name="account_type" translatable="false">com.tomscott</string>
+    <string name="content_authority" translatable="false">com.tomscott</string>
+
     <string name="title_activity_series">Series</string>
+
 </resources>

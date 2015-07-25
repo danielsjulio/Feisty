@@ -108,7 +108,7 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_card_small_playlist, null));
+            return new ViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.list_item_card_small_playlist, parent, false));
         }
 
         @Override
@@ -116,21 +116,25 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
             final SeriesList.Series series = mSeries.get(position);
             holder.reset(); //resets the viewholder back to its initial state
             holder.mTitleView.setText(series.snippet.title);
-            holder.mDescriptionView.setText(series.snippet.description);
+            if(!series.snippet.description.isEmpty()) {
+                holder.mDescriptionView.setText(series.snippet.description);
+                holder.mDescriptionView.setVisibility(View.VISIBLE);
+            }
+            holder.mEpisodeCount.setText(String.valueOf(series.contentDetails.itemCount));
             Picasso.with(getActivity()).load(series.snippet.thumbnails.high.url)
-                    .transform(PaletteTransformation.instance())
-                    .into(holder.mThumbnailView, new PaletteTransformation.PaletteCallback(holder.mThumbnailView) {
+//                    .transform(PaletteTransformation.instance())
+                    .into(holder.mThumbnailView/*, new PaletteTransformation.PaletteCallback(holder.mThumbnailView) {
                         @Override
                         public void onSuccess(Palette palette) {
-                            animateBackgroundColor(holder.mCardView, getResources().getColor(R.color.default_card_background),
-                                    palette.getVibrantColor(getResources().getColor(R.color.default_card_background)));
+//                            animateBackgroundColor(holder.mCardView, getResources().getColor(R.color.default_card_background),
+//                                    palette.getVibrantColor(getResources().getColor(R.color.default_card_background)));
                         }
 
                         @Override
                         public void onError() {
 
                         }
-                    });
+                    }*/);
             holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -171,16 +175,21 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
             @InjectView(R.id.video_thumbnail)
             ImageView mThumbnailView;
 
+            @InjectView(R.id.episode_count)
+            TextView mEpisodeCount;
+
             public ViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.inject(this, itemView);
             }
 
             public void reset(){
-                if(mCardView.getTag() != null){
-                    ((ObjectAnimator) mCardView.getTag()).cancel();
-                }
-                mCardView.setBackgroundColor(getResources().getColor(R.color.default_card_background));
+                mDescriptionView.setVisibility(View.GONE);
+
+//                if(mCardView.getTag() != null){
+//                    ((ObjectAnimator) mCardView.getTag()).cancel();
+//                }
+//                mCardView.setBackgroundColor(getResources().getColor(R.color.default_card_background));
             }
         }
     }

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -60,6 +61,9 @@ public class VideoControlsView extends FrameLayout implements
     @InjectView(R.id.video_controls_length_label)
     TextView mLengthLabel;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+
     boolean isBuffering;
 
     public VideoControlsView(Context context) {
@@ -88,6 +92,13 @@ public class VideoControlsView extends FrameLayout implements
         ButterKnife.inject(view, this);
         mSeekBar.setOnSeekBarChangeListener(this);
         setVisibility(View.GONE);
+
+        /*VideoDetailActivity activity = ((VideoDetailActivity) getContext());
+        activity.setSupportActionBar(mToolbar);
+        activity.getSupportActionBar().setHomeButtonEnabled(true);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setTitle("");*/
+
     }
 
     private static String formatTime(int milliseconds){
@@ -278,5 +289,11 @@ public class VideoControlsView extends FrameLayout implements
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
 
+        if(errorReason.compareTo(YouTubePlayer.ErrorReason.UNAUTHORIZED_OVERLAY) == 0){
+            if(mYoutubePlayer != null) {
+                onBuffering(false);
+                mYoutubePlayer.play();
+            }
+        }
     }
 }

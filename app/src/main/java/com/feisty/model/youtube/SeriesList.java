@@ -12,13 +12,13 @@ public class SeriesList extends RestContainer {
 
     @SerializedName("items")
     public List<Series> series;
-    public ContentDetails contentDetails;
 
     public class Series {
 
         public String id;
         public String kind;
         public Snippet snippet;
+        public ContentDetails contentDetails;
 
         public class Snippet {
             public Date publishedAt;

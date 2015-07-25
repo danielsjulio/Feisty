@@ -19,7 +19,6 @@ repositories {
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         applicationId "com.feisty"
         minSdkVersion 15
@@ -27,51 +26,47 @@ android {
         versionCode 1
         versionName "1.0"
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    /*productFlavors {
-        theverge {
-            applicationId "com.theverge"
+    productFlavors {
+        tomscottFlavor {
+            applicationId 'com.tomscott'
+            testApplicationId 'com.tomscott.debug'
         }
-        tomscott {
-            applicationId "com.tomscott"
+        alexchaconFlavor {
+            applicationId 'com.alexchacon'
+            testApplicationId 'com.alexchacon.debug'
         }
-    }*/
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.android.support:cardview-v7:22.0.0'
+    compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:support-annotations:22.0.0'
+    compile 'com.android.support:support-annotations:22.2.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.android.support:support-v4:22.0.0'
-    compile ('com.github.florent37:materialviewpager:1.0.3.2@aar'){
+    compile 'com.android.support:support-v4:22.2.0'
+    compile('com.github.florent37:materialviewpager:1.0.3.2@aar') {
         transitive = true
     }
-
-
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.facebook.stetho:stetho-okhttp:1.1.1'
-
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:palette-v7:21.0.0'
-
     compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
         transitive = true;
     }

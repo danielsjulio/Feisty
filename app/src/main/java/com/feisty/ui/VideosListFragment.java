@@ -82,8 +82,6 @@ public class VideosListFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        LOG.d("Got here");
         mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedCursorAdapter(getActivity(), data));
         mRecyclerView.setAdapter(mAdapter);
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);

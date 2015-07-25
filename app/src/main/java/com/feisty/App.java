@@ -14,10 +14,9 @@ import io.fabric.sdk.android.Fabric;
 public class App extends Application {
 
 
-    //TODO(gil): Error screens
-    //TODO(daniel): Change main feed to use channel data
-    //TODO(gil): Creating a new profile should be seamless
-    //TODO(gil: Notifications
+    //TODO: Error screens
+    //TODO: Creating a new profile should be seamless
+    //TODO: Notifications
 
 
     private static Context mContext;
