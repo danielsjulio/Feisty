@@ -11,12 +11,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.util.TimingLogger;
 
 import com.feisty.R;
@@ -234,16 +236,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
         c.close();
 
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        boolean firstSync = preferences.getBoolean(FIRST_SYNC, true);
-//
-//        if (firstSync) {
-//            SharedPreferences.Editor editor = preferences.edit();
-//            editor.putBoolean(FIRST_SYNC, false);
-//            editor.commit();
-//        } else {
-//            triggerNotification(videoMap);
-//        }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean firstSync = preferences.getBoolean(FIRST_SYNC, true);
+
+        if (firstSync) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean(FIRST_SYNC, false);
+            editor.commit();
+        } else {
+            triggerNotification(videoMap);
+        }
 
         triggerNotification(videoMap);
 
