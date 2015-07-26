@@ -4,6 +4,7 @@ import com.feisty.model.youtube.VideoList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,12 +16,12 @@ public class Video implements Serializable {
     public String title;
     public String description;
     public String imageUrl;
-    public String publishedAt;
+    public Date publishedAt;
 
     public Video() {
     }
 
-    public Video(String id, String title, String description, String imageUrl, String publishedAt) {
+    public Video(String id, String title, String description, String imageUrl, Date publishedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -34,11 +35,15 @@ public class Video implements Serializable {
      * @return list of videos
      */
     public static List<Video> toVideos(VideoList videoList){
-        List<Video> videos = new ArrayList<>();
-        for (VideoList.Video video : videoList.videos){
-            videos.add(toVideo(video));
+        return toVideos(videoList.videos);
+    }
+
+    public static List<Video> toVideos(List<VideoList.Video> videos){
+        List<Video> newVideos = new ArrayList<>();
+        for (VideoList.Video video : videos){
+            newVideos.add(toVideo(video));
         }
-        return videos;
+        return newVideos;
     }
 
     public static Video toVideo(VideoList.Video video){

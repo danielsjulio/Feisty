@@ -6,12 +6,17 @@ import android.database.Cursor;
 import com.feisty.model.Video;
 import com.feisty.sync.Contacts;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 
 /**
  * Created by florentchampigny on 24/04/15.
  */
 public class VideoFeedCursorAdapter extends GenericVideoFeedAdapter {
 
+    private static DateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     Cursor mCursor;
 
@@ -54,7 +59,11 @@ public class VideoFeedCursorAdapter extends GenericVideoFeedAdapter {
         video.title = (mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_TITLE)));
         video.description = (mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_SHORT_DESCRIPTION)));
         video.imageUrl = (mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_IMAGE_URL)));
-        video.publishedAt = (mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_PUBLISHED)));
+        try {
+            video.publishedAt = sDateFormat.parse(mCursor.getString(mCursor.getColumnIndex(Contacts.Video.COLUMN_NAME_PUBLISHED)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         return video;
     }

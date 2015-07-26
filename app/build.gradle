@@ -21,7 +21,7 @@ android {
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "com.feisty"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -44,6 +44,10 @@ android {
         alexchaconFlavor {
             applicationId 'com.alexchacon'
             testApplicationId 'com.alexchacon.debug'
+        }
+        dansFlavor {
+            applicationId 'com.dan'
+            testApplicationId 'com.dan.debug'
         }
     }
 }

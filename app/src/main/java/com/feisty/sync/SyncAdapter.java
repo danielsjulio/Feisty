@@ -1,32 +1,47 @@
 package com.feisty.sync;
 
 import android.accounts.Account;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.TimingLogger;
 
 import com.feisty.R;
+import com.feisty.model.Video;
 import com.feisty.model.youtube.ChannelList;
 import com.feisty.model.youtube.VideoList;
 import com.feisty.net.API;
+import com.feisty.ui.VideoDetailActivity;
+import com.feisty.ui.transformation.RoundedTransformation;
 import com.feisty.utils.Logger;
+import com.squareup.picasso.Picasso;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by danieljulio on 20/06/15.
@@ -34,8 +49,10 @@ import java.util.HashMap;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private static final Logger LOG = Logger.create();
+    private static final String FIRST_SYNC = "first_sync";
 
     private final ContentResolver mContentResolver;
+    private static DateFormat sDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
     /**
      * Constructor. Obtains handle to content resolver for later use.
@@ -154,7 +171,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             } else {
                 videoList = API.getYoutubeService(getContext()).getPlaylistItems(uploadsPlaylistId, nextPageToken);
             }
-
             nextPageToken = videoList.nextPageToken;
             // Build hash table of incoming entries
             for (VideoList.Video e : videoList.videos) {
@@ -175,7 +191,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         String title;
         String description;
         String imageUrl;
-        String published;
+        Date published;
         while (c.moveToNext()) {
             syncResult.stats.numEntries++;
             id = c.getInt(Contacts.Video.PROJECTION.COLUMN_ID);
@@ -183,7 +199,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             title = c.getString(Contacts.Video.PROJECTION.COLUMN_TITLE);
             description = c.getString(Contacts.Video.PROJECTION.COLUMN_SHORT_DESCRIPTION);
             imageUrl = c.getString(Contacts.Video.PROJECTION.COLUMN_IMAGE_URL);
-            published = c.getString(Contacts.Video.PROJECTION.COLUMN_PUBLISHED);
+            published = sDateFormatter.parse(c.getString(Contacts.Video.PROJECTION.COLUMN_PUBLISHED));
             VideoList.Video match = videoMap.get(videoId);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
@@ -194,14 +210,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 if ((match.snippet.title != null && !match.snippet.title.equals(title)) ||
                         (match.snippet.description != null && !match.snippet.description.equals(description)) ||
                         (match.snippet.thumbnails.high.url != null && !match.snippet.thumbnails.high.url.equals(imageUrl)) ||
-                        (match.snippet.publishedAt != published)) {
+                        (!match.snippet.publishedAt.equals(published))) {
                     // Update existing record
                     LOG.i("Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
                             .withValue(Contacts.Video.COLUMN_NAME_TITLE, title)
                             .withValue(Contacts.Video.COLUMN_NAME_SHORT_DESCRIPTION, description)
                             .withValue(Contacts.Video.COLUMN_NAME_IMAGE_URL, imageUrl)
-                            .withValue(Contacts.Video.COLUMN_NAME_PUBLISHED, published)
+                            .withValue(Contacts.Video.COLUMN_NAME_PUBLISHED, sDateFormatter.format(published))
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -218,6 +234,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
         c.close();
 
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        boolean firstSync = preferences.getBoolean(FIRST_SYNC, true);
+//
+//        if (firstSync) {
+//            SharedPreferences.Editor editor = preferences.edit();
+//            editor.putBoolean(FIRST_SYNC, false);
+//            editor.commit();
+//        } else {
+//            triggerNotification(videoMap);
+//        }
+
+        triggerNotification(videoMap);
+
         // Add new items
         for (VideoList.Video e : videoMap.values()) {
             LOG.i("Scheduling insert: entry_id=" + e.snippet.resourceId.videoId);
@@ -226,10 +255,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .withValue(Contacts.Video.COLUMN_NAME_TITLE, e.snippet.title)
                     .withValue(Contacts.Video.COLUMN_NAME_SHORT_DESCRIPTION, e.snippet.description)
                     .withValue(Contacts.Video.COLUMN_NAME_IMAGE_URL, e.snippet.thumbnails.high.url)
-                    .withValue(Contacts.Video.COLUMN_NAME_PUBLISHED, e.snippet.publishedAt)
+                    .withValue(Contacts.Video.COLUMN_NAME_PUBLISHED, sDateFormatter.format(e.snippet.publishedAt))
                     .build());
             syncResult.stats.numInserts++;
         }
+
         LOG.i("Merge solution ready. Applying batch update");
         mContentResolver.applyBatch(Contacts.CONTENT_AUTHORITY, batch);
         mContentResolver.notifyChange(
@@ -240,4 +270,52 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // syncToNetwork=false in the line above to prevent duplicate syncs.
     }
 
+    private void triggerNotification(HashMap<String, VideoList.Video> map) {
+        if (!map.isEmpty()) {
+
+            ArrayList<Video> videos = (ArrayList<Video>) Video.toVideos(new ArrayList<>(map.values()));
+            Collections.sort(videos, new Comparator<Video>() {
+                @Override
+                public int compare(Video lhs, Video rhs) {
+                    return lhs.publishedAt.after(rhs.publishedAt) ? 1 : 0;
+                }
+            });
+
+//            Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_launcher);
+            Bitmap icon = null;
+            try {
+                icon = Picasso.with(getContext()).load(R.drawable.russellbrand).resize(128, 128).centerInside().transform(new RoundedTransformation(1000, 0)).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Intent intent = new Intent(getContext(), VideoDetailActivity.class);
+            intent.putExtra(VideoDetailActivity.KEY_VIDEO, videos.get(0));
+
+            String title = videos.size() > 1 ?
+                    (getContext().getString(R.string.app_name) + " uploaded " + videos.size() + " new videos") :
+                    (getContext().getString(R.string.app_name) + " uploaded " + videos.get(0).title);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+            Notification.Builder notification = new Notification.Builder(getContext())
+                    .setContentTitle(title)
+                    .setContentText(videos.get(0).title)
+                    .setContentInfo(String.valueOf(videos.size()) + " uploads")
+                    .setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.ic_new_video_notification)
+                    .setLargeIcon(icon);
+
+            Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
+            inboxStyle.setBigContentTitle(title);
+            inboxStyle.setSummaryText("This is summary text");
+
+            for (Video video : videos) {
+                inboxStyle.addLine(video.title);
+            }
+
+            notification.setStyle(inboxStyle);
+            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1, notification.build());
+        }
+    }
 }

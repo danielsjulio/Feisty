@@ -2,6 +2,7 @@ package com.feisty.model.youtube;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,8 +27,7 @@ public class VideoList extends RestContainer {
         }
 
         public class Snippet {
-            //TODO: fix gson date coversion
-            public String publishedAt;
+            public Date publishedAt;
             public String channelId;
             public String title;
             public String description;
@@ -42,7 +42,6 @@ public class VideoList extends RestContainer {
         }
 
         public class Statistics {
-
             public int viewCount;
             public int likeCount;
             public int dislikeCount;
@@ -55,7 +54,6 @@ public class VideoList extends RestContainer {
             public String dimension;//wether it is 3d or 2d
             public String definition;//example: "hd"
             public boolean licensedContent;
-
         }
     }
 }
