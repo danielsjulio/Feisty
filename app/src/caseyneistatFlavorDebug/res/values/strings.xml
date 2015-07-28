@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">(d) Casey Neistat</string>
+
+
+	<string name="account_type" translatable="false">com.caseyneistat.debug</string>
+	<string name="content_authority" translatable="false">com.caseyneistat.debug</string>
+</resources>

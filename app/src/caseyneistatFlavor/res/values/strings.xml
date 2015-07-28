@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Casey Neistat</string>
+	<string name="youtube_channel_id" transalatable="false">UCtinbF-Q-fVthA0qrFQTgXQ</string>
+
+	<string name="account_type" translatable="false">com.caseyneistat</string>
+	<string name="content_authority" translatable="false">com.caseyneistat</string>
+</resources>
