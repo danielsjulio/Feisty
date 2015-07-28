@@ -54,7 +54,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String FIRST_SYNC = "first_sync";
 
     private final ContentResolver mContentResolver;
+
     private static DateFormat sDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+
+    public static int VIDEO_NOTIFICATION_ID = 4237;
 
     /**
      * Constructor. Obtains handle to content resolver for later use.
@@ -124,6 +127,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (OperationApplicationException e) {
             LOG.e("Error updating database: " + e.toString());
             syncResult.databaseError = true;
+            return;
+        } catch (Exception e){
+            LOG.e("Error reading from network: " + e.toString());
+            syncResult.stats.numIoExceptions++;
             return;
         }
         LOG.i("Network synchronization complete");
@@ -286,38 +293,52 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //            Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_launcher);
             Bitmap icon = null;
             try {
-                icon = Picasso.with(getContext()).load(R.drawable.russellbrand).resize(128, 128).centerInside().transform(new RoundedTransformation(1000, 0)).get();
+                icon = Picasso.with(getContext())
+                        .load(R.mipmap.ic_launcher)
+                        .resize(128, 128)
+                        .centerInside()
+                        .transform(new RoundedTransformation(1000, 0))
+                        .get();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            Intent intent = new Intent(getContext(), VideoDetailActivity.class);
-            intent.putExtra(VideoDetailActivity.KEY_VIDEO, videos.get(0));
+            boolean single = videos.size() == 1;
+            Video first = videos.get(0);
+            String appName = getContext().getString(R.string.app_name);
 
-            String title = videos.size() > 1 ?
-                    (getContext().getString(R.string.app_name) + " uploaded " + videos.size() + " new videos") :
-                    (getContext().getString(R.string.app_name) + " uploaded " + videos.get(0).title);
+            Intent intent = VideoDetailActivity.getIntent(getContext(), first);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
             Notification.Builder notification = new Notification.Builder(getContext())
-                    .setContentTitle(title)
-                    .setContentText(videos.get(0).title)
-                    .setContentInfo(String.valueOf(videos.size()) + " uploads")
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.ic_new_video_notification)
                     .setLargeIcon(icon);
 
-            Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
-            inboxStyle.setBigContentTitle(title);
-            inboxStyle.setSummaryText("This is summary text");
 
-            for (Video video : videos) {
-                inboxStyle.addLine(video.title);
+            if(single) {
+                notification.setContentTitle(first.title);
+                notification.setContentText("New upload from " + appName);
+            } else {
+                notification.setContentTitle(appName + " uploaded " + videos.size() + " new videos");
+                notification.setContentText(first.title);
+                String uploadCount = getContext().getResources()
+                        .getQuantityString(R.plurals.notification_uploads, videos.size(), videos.size());
+                notification.setContentInfo(uploadCount);
+
+                Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
+                inboxStyle.setBigContentTitle(first.title);
+                inboxStyle.setSummaryText(appName);
+                notification.setStyle(inboxStyle);
+                for (Video video : videos) {
+                    inboxStyle.addLine(video.title);
+                }
             }
 
-            notification.setStyle(inboxStyle);
-            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1, notification.build());
+
+            NotificationManager notificationManager =
+                    (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(VIDEO_NOTIFICATION_ID, notification.build());
         }
     }
 }
