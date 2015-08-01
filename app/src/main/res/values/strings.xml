@@ -3,11 +3,13 @@
 
     <string name="app_name">Feisty</string>
     <string name="action_settings">Settings</string>
+    <string name="about">About</string>
 
     <string name="tabbar_item_videos">Videos</string>
     <string name="tabbar_item_series">Series</string>
 
     <string name="title_activity_series">Series</string>
+    <string name="sp_key_video_notifications">notification_video</string>
 
     <string name="youtube_api_key" translatable="false">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
     <string name="youtube_player_api_key" translatable="false">AIzaSyCBFcpgmI0cx6sJJBLxq9vCtXOKaXR4GXw</string>
