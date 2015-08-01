@@ -1,0 +1,35 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Developer Options"
+        android:key="dev_options_category">
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Notifications">
+        <SwitchPreference
+            android:key="@string/sp_key_video_notifications"
+            android:title="New video"
+            android:summaryOn="Notifications will be sent when a new video is uploaded"
+            android:summaryOff="Notification won't be sent when a new video is uploaded"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="More information">
+        <Preference
+            android:key="rate_us"
+            android:title="Rate us"/>
+        <Preference
+            android:key="open_soruce"
+            android:title="Open source libs"/>
+        <!--<Preference
+        android:title="Terms and conditions"/>-->
+        <!--<Preference
+        android:title="Privacy policy"/>-->
+        <Preference
+            android:key="version"
+            android:title="Version"
+            android:summary="1.0.0"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

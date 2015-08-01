@@ -2,6 +2,7 @@ package com.feisty;
 
 import android.app.Application;
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -28,6 +29,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //sets the default values for preferences
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
