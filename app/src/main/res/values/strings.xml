@@ -14,4 +14,7 @@
     <string name="youtube_api_key" translatable="false">AIzaSyCdtsITCb2SmSjrF9w4kMhM-aeLf1GoKwo</string>
     <string name="youtube_player_api_key" translatable="false">AIzaSyCBFcpgmI0cx6sJJBLxq9vCtXOKaXR4GXw</string>
 
+    <string name="about_feisty_title">About Feisty</string>
+    <string name="about_feisty_info">Feisty specializes in producing high quality apps for the most popular YouTube artists in the world. For enquiries, feedback or anything else, please contact us at</string>
+    <string name="about_feisty_email">&lt;a href="mailto:feistyapps@gmail.com">feistyapps@gmail.com&lt;/a></string>
 </resources>

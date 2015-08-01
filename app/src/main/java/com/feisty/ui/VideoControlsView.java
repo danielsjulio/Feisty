@@ -113,7 +113,6 @@ public class VideoControlsView extends FrameLayout implements
     }
 
     void updateSeekInfo(){
-        LOG.d("updateSeekInfo");
         if(mYoutubePlayer != null){
             mSeekBarLabel.setText(formatTime(mYoutubePlayer.getCurrentTimeMillis()));
             mLengthLabel.setText(formatTime(mYoutubePlayer.getDurationMillis()));
@@ -308,12 +307,12 @@ public class VideoControlsView extends FrameLayout implements
 
     @Override
     public void onVideoEnded() {
-
+        LOG.d("onVideoEnded");
     }
 
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-
+        LOG.d("onError: " + errorReason.name());
         if(errorReason.compareTo(YouTubePlayer.ErrorReason.UNAUTHORIZED_OVERLAY) == 0){
             if(mYoutubePlayer != null) {
                 /*onBuffering(false);

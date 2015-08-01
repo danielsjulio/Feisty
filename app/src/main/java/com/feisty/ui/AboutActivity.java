@@ -3,6 +3,8 @@ package com.feisty.ui;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,6 +48,9 @@ public class AboutActivity extends BaseActivity implements Callback<About> {
     @InjectView(R.id.about_total_watched)
     TextView mWatchedTotal;
 
+    @InjectView(R.id.about_feisty)
+    TextView mAboutFeisty;
+
 
     //TODO: Implement loading state
     @Override
@@ -58,6 +63,7 @@ public class AboutActivity extends BaseActivity implements Callback<About> {
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             mCollapsingToolbarLayout.setTitle(getResources().getString(R.string.app_name));
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
         }
 
         API.getYoutubeService(this).getAboutUsInfo(getString(R.string.youtube_channel_id), this);
@@ -71,7 +77,8 @@ public class AboutActivity extends BaseActivity implements Callback<About> {
         mSubsTotal.setText("Total subscribers: " + about.items.get(0).statistics.subscriberCount);
         mVideosTotal.setText("Total videos uploaded: " + about.items.get(0).statistics.videoCount);
         mWatchedTotal.setText("Total video views: " + about.items.get(0).statistics.viewCount);
-
+        mAboutFeisty.setText(Html.fromHtml(getResources().getString(R.string.about_feisty_info) + " " + getResources().getString(R.string.about_feisty_email)));
+        mAboutFeisty.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     //TODO: Handle failure

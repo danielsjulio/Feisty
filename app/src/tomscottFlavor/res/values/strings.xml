@@ -5,4 +5,6 @@
 
     <string name="account_type" translatable="false">com.tomscott</string>
     <string name="content_authority" translatable="false">com.tomscott</string>
+
+    <string name="youtube_channel_id_path_id">/channel/UCBa659QWEk1AI4Tg--mrJ2A</string>
 </resources>

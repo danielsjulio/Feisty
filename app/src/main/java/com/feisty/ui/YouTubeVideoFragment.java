@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toolbar;
 
 import com.feisty.R;
 import com.feisty.utils.Logger;
@@ -137,7 +136,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         container.addView(rootView);
         mControlsOverlay = new VideoControlsView(getActivity());
         mControlsOverlay.setFullscreenButtonListener(this);
-        container.addView(mControlsOverlay);
+//        container.addView(mControlsOverlay);
         return container;
     }
 
@@ -220,7 +219,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         mControlsOverlay.setYoutubePlayer(player);
         player.setPlaybackEventListener(mControlsOverlay);
         player.setPlayerStateChangeListener(mControlsOverlay);
-        player.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
+        player.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
         player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
 
         //TODO: Look into how to make the back button automaticly aHack
