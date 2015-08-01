@@ -160,6 +160,9 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
                 startActivity(intent);
                 return true;
             case R.id.about:
+                Intent intent1 = new Intent(this, AboutActivity.class);
+                startActivity(intent1);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

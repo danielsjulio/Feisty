@@ -108,6 +108,12 @@
             android:theme="@style/SettingsActivityTheme"
             android:parentActivityName=".ui.MainActivity">
         </activity>
+        <activity
+            android:name=".ui.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/SettingsActivityTheme"
+            android:parentActivityName=".ui.MainActivity">
+        </activity>
     </application>
 
 </manifest>

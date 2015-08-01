@@ -1,5 +1,6 @@
 package com.feisty.net;
 
+import com.feisty.model.youtube.About;
 import com.feisty.model.youtube.ChannelList;
 import com.feisty.model.youtube.CommentList;
 import com.feisty.model.youtube.SeriesList;
@@ -50,4 +51,7 @@ public interface YouTubeService {
     VideoList getPlaylistItems(@Query("playlistId") String playlistId);
     @GET("/youtube/v3/playlistItems?part=contentDetails%2Cid%2Csnippet%2Cstatus&maxResults=50")
     VideoList getPlaylistItems(@Query("playlistId") String playlistId, @Query("pageToken") String nextPageToken);
+
+    @GET("/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics")
+    void getAboutUsInfo(@Query("id") String channelId, Callback<About> cb);
 }
