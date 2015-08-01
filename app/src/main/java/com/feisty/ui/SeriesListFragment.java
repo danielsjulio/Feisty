@@ -5,6 +5,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +21,9 @@ import com.feisty.model.Playlist;
 import com.feisty.model.youtube.SeriesList;
 import com.feisty.net.API;
 import com.feisty.ui.listeners.InfinityScrollListener;
+import com.feisty.ui.listeners.RetrofitResponseObserver;
 import com.feisty.ui.transformation.PaletteTransformation;
+import com.feisty.ui.views.NetworkMetaView;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
 import com.squareup.picasso.Picasso;
@@ -37,15 +40,19 @@ import retrofit.client.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SeriesListFragment extends Fragment implements Callback<SeriesList>, InfinityScrollListener.ScrollResultListener {
+public class SeriesListFragment extends Fragment implements Callback<SeriesList>, InfinityScrollListener.ScrollResultListener, SwipeRefreshLayout.OnRefreshListener {
 
     @InjectView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+
+    @InjectView(R.id.network_meta_view)
+    NetworkMetaView mNetworkMetaView;
 
     SeriesAdapter mSeriesAdapter;
     RecyclerViewMaterialAdapter mAdapter;
 
     InfinityScrollListener mInfinityScrollListener;
+    RetrofitResponseObserver<SeriesList> mResponseListener;
 
     public SeriesListFragment() {
         // Required empty public constructor
@@ -66,6 +73,14 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
         mSeriesAdapter = new SeriesAdapter();
         mAdapter = new RecyclerViewMaterialAdapter(mSeriesAdapter);
         mRecyclerView.setAdapter(mAdapter);
+
+        mResponseListener = new RetrofitResponseObserver<>();
+        mResponseListener.addObserver(this);
+        mResponseListener.addObserver(mNetworkMetaView);
+        mNetworkMetaView.setNetworkResultsContainer(mRecyclerView);
+        mNetworkMetaView.setOnRefreshListener(this);
+
+
         mInfinityScrollListener = new InfinityScrollListener(this);
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, mInfinityScrollListener);
         loadMore(null);
@@ -91,10 +106,18 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
     @Override
     public void loadMore(String nextPageToken) {
         if(nextPageToken == null) {
-            API.getYoutubeService(getActivity()).getPlaylists(getString(R.string.youtube_channel_id), this);
+            API.getYoutubeService(getActivity()).getPlaylists(getString(R.string.youtube_channel_id), mResponseListener);
         } else {
-            API.getYoutubeService(getActivity()).getPlaylists(getString(R.string.youtube_channel_id), nextPageToken, this);
+            API.getYoutubeService(getActivity()).getPlaylists(getString(R.string.youtube_channel_id), nextPageToken, mResponseListener);
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        int count = mSeriesAdapter.getSeries().size();
+        mSeriesAdapter.getSeries().clear();
+        mSeriesAdapter.notifyItemRangeRemoved(0, count);
+        loadMore(null);
     }
 
 
@@ -138,7 +161,8 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
             holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SeriesEpisodesActivity.startActivity(getActivity(),
+                    holder.mThumbnailView.setTransitionName("videoThumbnail");
+                    SeriesEpisodesActivity.startActivity(getActivity(), holder.mThumbnailView,
                             new Playlist(series.id, series.snippet.title, series.snippet.description, series.snippet.thumbnails.high.url));
                 }
             });

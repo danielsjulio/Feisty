@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenCentral()
         maven {
             url 'https://maven.fabric.io/public'
         }
@@ -7,60 +8,100 @@ buildscript {
 
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.github.triplet.gradle:play-publisher:1.1.2'
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.github.triplet.play'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+// This is where to look for the .apk signing key.
+def releaseRepoRoot = file('../../release/')
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
+
     defaultConfig {
         applicationId "com.feisty"
         minSdkVersion 16
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    signingConfigs {
+        def Properties keyProps = new Properties()
+        keyProps.load(new FileInputStream(file(new File(releaseRepoRoot, 'keystore-passwords.properties'))))
+
+
+        /** SIGNING CONFIG BELOW **/
+		zoellaFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/com.zoella.keystore'))
+			keyAlias 'com.zoella'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
+		caseyneistatFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/com.caseyneistat.keystore'))
+			keyAlias 'com.caseyneistat'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
+        tomscottFlavor {
+            storeFile file(new File(releaseRepoRoot, 'keys/com.tomscott.keystore'))
+            keyAlias "com.tomscott"
+            storePassword keyProps["storePassword"]
+            keyPassword keyProps["keyPassword"]
+        }
+    }
+
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '.debug'
+        }
     }
     productFlavors {
+        /** PRODUCT FLAVOR BELOW **/
+		zoellaFlavor {
+			applicationId 'com.zoella'
+			signingConfig signingConfigs.zoellaFlavor 
+		}
+		caseyneistatFlavor {
+			applicationId 'com.caseyneistat'
+			signingConfig signingConfigs.caseyneistatFlavor 
+		}
         tomscottFlavor {
             applicationId 'com.tomscott'
-            testApplicationId 'com.tomscott.debug'
+            signingConfig signingConfigs.tomscottFlavor
         }
-        alexchaconFlavor {
-            applicationId 'com.alexchacon'
-            testApplicationId 'com.alexchacon.debug'
-        }
-        dansFlavor {
-            applicationId 'com.dan'
-            testApplicationId 'com.dan.debug'
-        }
+
+    }
+    play {
+        serviceAccountEmail = '528762370966-lsq6r6g18q2lfoctg0mc6fpuo98erbh7@developer.gserviceaccount.com'
+        pk12File = file(new File(releaseRepoRoot, 'Google-Play-Android-Developer-ff1a631067d7.p12'))
+        track = 'production'
+        uploadImages = true
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.github.florent37:materialviewpager:1.0.3.2@aar') {
-        transitive = true
-    }
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
-        transitive = true;
-    }
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.android.support:cardview-v7:22.2.1'
@@ -68,10 +109,17 @@ dependencies {
     compile 'com.android.support:support-annotations:22.2.1'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.android.support:support-v4:22.2.1'
+    compile('com.github.florent37:materialviewpager:1.0.3.2@aar') {
+        transitive = true
+    }
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.facebook.stetho:stetho-okhttp:1.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:palette-v7:22.2.1'
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
+        transitive = true;
+    }
 }

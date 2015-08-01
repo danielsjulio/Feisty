@@ -6,8 +6,9 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:textColorPrimary">@android:color/white</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:windowTranslucentStatus">true</item>
 
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowActionBar">false</item>
@@ -35,6 +36,9 @@
 
     <style name="SettingsActivityTheme" parent="AppTheme">
         <item name="colorAccent">@color/primary</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+
     </style>
 
     <style name="SettingsToolbarTheme" parent="AppTheme">

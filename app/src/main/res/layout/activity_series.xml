@@ -30,7 +30,8 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:fitsSystemWindows="true"
-                    app:layout_collapseMode="parallax" />
+                    app:layout_collapseMode="parallax"
+                    android:transitionName="videoThumbnail"/>
             </FrameLayout>
 
             <android.support.v7.widget.Toolbar
@@ -47,5 +48,9 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:visibility="gone"/>
-
+    <com.feisty.ui.views.NetworkMetaView
+        android:id="@+id/network_meta_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="196dp"/>
 </android.support.design.widget.CoordinatorLayout>

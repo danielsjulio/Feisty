@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toolbar;
 
 import com.feisty.R;
 import com.feisty.utils.Logger;
@@ -23,7 +24,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
  */
 
 public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
-        implements YouTubePlayer.OnInitializedListener {
+        implements YouTubePlayer.OnInitializedListener, VideoControlsView.FullscreenButtonListener {
 
     private static final Logger LOG = Logger.create();
 
@@ -85,7 +86,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
 
             LOG.d("Tapped at: (" + x + "," + y + ")");
 
-            setFullScreen(true);
+            toggleFullscreen();
             /*Intent intent = new Intent(getActivity(), YouTubePlayerActivity.class);
 
             // Youtube video ID or Url (Required)
@@ -135,6 +136,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         final View rootView = super.onCreateView(layoutInflater, container, bundle);
         container.addView(rootView);
         mControlsOverlay = new VideoControlsView(getActivity());
+        mControlsOverlay.setFullscreenButtonListener(this);
         container.addView(mControlsOverlay);
         return container;
     }
@@ -147,7 +149,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
             @Override
             public void onSystemUiVisibilityChange(int visibility) {
 //                getActivity().getWindow().getDecorView().setSystemUiVisibility(FULL);
-                if(mFullscreen && visibility == View.VISIBLE && player != null) {
+                if (mFullscreen && visibility == View.VISIBLE && player != null) {
                     if (player.isPlaying()) {
                         player.pause();
                     } else {
@@ -198,8 +200,15 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
             @Override
             public void onFullscreen(boolean isFullscreen) {
                 mFullscreen = isFullscreen;
+                if(mControlsOverlay != null){
+                    mControlsOverlay.setIsFullscreen(isFullscreen);
+                }
                 VideoDetailActivity videoDetailActivity = ((VideoDetailActivity) getActivity());
                 videoDetailActivity.doLayout(isFullscreen);
+                if(mControlsOverlay != null) {
+                    ((android.widget.FrameLayout.LayoutParams) mControlsOverlay.mToolbar.getLayoutParams())
+                            .topMargin = isFullscreen ? 0 : getStatusBarHeight();
+                }
             }
         });
 
@@ -213,6 +222,10 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         player.setPlayerStateChangeListener(mControlsOverlay);
         player.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
+
+        //TODO: Look into how to make the back button automaticly aHack
+        ((android.widget.FrameLayout.LayoutParams) mControlsOverlay.mToolbar.getLayoutParams())
+                .topMargin = mFullscreen ? 0 : getStatusBarHeight();
 
         if (!restored && mVideoId != null) {
             player.loadVideo(mVideoId);
@@ -237,4 +250,23 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
             player.setFullscreen(fullScreen);
         }
     }
+
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    void toggleFullscreen(){
+        setFullScreen(!mFullscreen);
+    }
+
+    @Override
+    public void onFullscreenButtonClick() {
+        toggleFullscreen();
+    }
+
 }

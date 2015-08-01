@@ -2,12 +2,12 @@ package com.feisty.ui;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -65,6 +65,11 @@ public class VideoControlsView extends FrameLayout implements
     Toolbar mToolbar;
 
     boolean isBuffering;
+    boolean isFullscreen;
+
+    FullscreenButtonListener mFullscreenButtonListener;
+
+    boolean isPlayingState;
 
     public VideoControlsView(Context context) {
         super(context);
@@ -93,12 +98,11 @@ public class VideoControlsView extends FrameLayout implements
         mSeekBar.setOnSeekBarChangeListener(this);
         setVisibility(View.GONE);
 
-        /*VideoDetailActivity activity = ((VideoDetailActivity) getContext());
+        VideoDetailActivity activity = ((VideoDetailActivity) getContext());
         activity.setSupportActionBar(mToolbar);
         activity.getSupportActionBar().setHomeButtonEnabled(true);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        activity.getSupportActionBar().setTitle("");*/
-
+        activity.getSupportActionBar().setTitle("");
     }
 
     private static String formatTime(int milliseconds){
@@ -108,14 +112,20 @@ public class VideoControlsView extends FrameLayout implements
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
     }
 
-    public void show(){
-
+    void updateSeekInfo(){
+        LOG.d("updateSeekInfo");
         if(mYoutubePlayer != null){
             mSeekBarLabel.setText(formatTime(mYoutubePlayer.getCurrentTimeMillis()));
             mLengthLabel.setText(formatTime(mYoutubePlayer.getDurationMillis()));
             mSeekBar.setMax(mYoutubePlayer.getDurationMillis());
             mSeekBar.setProgress(mYoutubePlayer.getCurrentTimeMillis());
         }
+
+    }
+
+    public void show(){
+
+        updateSeekInfo();
 
 //        mBufferingProgressBar.setVisibility(GONE);
         setVisibility(VISIBLE);
@@ -188,6 +198,12 @@ public class VideoControlsView extends FrameLayout implements
                     }
                 })
                 .start();*/
+        if (!isFullscreen) {
+            View decorView = ((Activity) getContext()).getWindow().getDecorView();
+            // Hide the status bar.
+            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
     }
 
     public void hide(){
@@ -195,6 +211,11 @@ public class VideoControlsView extends FrameLayout implements
         mControlsContainer.setVisibility(GONE);
         if(!isBuffering)
             setVisibility(GONE);
+
+        View decorView = ((Activity)getContext()).getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
 
     }
 
@@ -220,8 +241,9 @@ public class VideoControlsView extends FrameLayout implements
     public void onBuffering(boolean b) {
         LOG.d("onBuffering(" + b + ")");
         isBuffering = b;
-        setVisibility(b ? VISIBLE : GONE);
-        mBufferingProgressBar.setVisibility(b ? VISIBLE : GONE);
+        updateSeekInfo();
+//        setVisibility(b ? VISIBLE : GONE);
+//        mBufferingProgressBar.setVisibility(b ? VISIBLE : GONE);
     }
 
     @Override
@@ -254,20 +276,23 @@ public class VideoControlsView extends FrameLayout implements
 
     @OnClick(R.id.fullscreen)
     public void setFullscreen(View view){
-        if (mYoutubePlayer != null)
-            mYoutubePlayer.setFullscreen(true);
+        mFullscreenButtonListener.onFullscreenButtonClick();
     }
 
     @Override
     public void onLoading() {
         LOG.d("onLoading");
         onBuffering(true);
+        setVisibility(VISIBLE);
+        mBufferingProgressBar.setVisibility(VISIBLE);
     }
 
     @Override
     public void onLoaded(String videoId) {
         LOG.d("onLoaded");
         onBuffering(false);
+        setVisibility(GONE);
+        mBufferingProgressBar.setVisibility(GONE);
     }
 
     @Override
@@ -291,9 +316,22 @@ public class VideoControlsView extends FrameLayout implements
 
         if(errorReason.compareTo(YouTubePlayer.ErrorReason.UNAUTHORIZED_OVERLAY) == 0){
             if(mYoutubePlayer != null) {
-                onBuffering(false);
-                mYoutubePlayer.play();
+                /*onBuffering(false);
+                mYoutubePlayer.play();*/
+
             }
         }
+    }
+
+    public void setFullscreenButtonListener(FullscreenButtonListener mFullscreenButtonListener) {
+        this.mFullscreenButtonListener = mFullscreenButtonListener;
+    }
+
+    public void setIsFullscreen(boolean isFullscreen) {
+        this.isFullscreen = isFullscreen;
+    }
+
+    interface FullscreenButtonListener {
+        void onFullscreenButtonClick();
     }
 }
