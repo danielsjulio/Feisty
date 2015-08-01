@@ -1,13 +1,21 @@
 package com.feisty.ui;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Slide;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.feisty.R;
@@ -16,7 +24,9 @@ import com.feisty.model.Video;
 import com.feisty.model.youtube.VideoList;
 import com.feisty.net.API;
 import com.feisty.ui.listeners.InfinityScrollListener;
+import com.feisty.ui.listeners.RetrofitResponseObserver;
 import com.feisty.ui.transformation.PaletteTransformation;
+import com.feisty.ui.views.NetworkMetaView;
 import com.feisty.utils.Logger;
 import com.squareup.picasso.Picasso;
 
@@ -26,9 +36,11 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class SeriesEpisodesActivity extends BaseActivity implements InfinityScrollListener.ScrollResultListener, Callback<VideoList> {
+public class SeriesEpisodesActivity extends BaseActivity
+        implements InfinityScrollListener.ScrollResultListener, Callback<VideoList>, SwipeRefreshLayout.OnRefreshListener {
 
     private static final Logger LOG = Logger.create();
+
     private static final String PLAYLIST = "playlist";
 
     @InjectView(R.id.series_videos)
@@ -43,18 +55,20 @@ public class SeriesEpisodesActivity extends BaseActivity implements InfinityScro
     @InjectView(R.id.backdrop)
     ImageView mToolbarBackdrop;
 
-    private Playlist mPlaylist;
+    @InjectView(R.id.network_meta_view)
+    NetworkMetaView mNetworkMetaView;
 
+    private Playlist mPlaylist;
     private InfinityScrollListener mInfinityScrollListener;
     private VideoFeedArrayAdapter mAdapter;
+    private RetrofitResponseObserver<VideoList> mResponseObserver;
 
-    public static void startActivity(Context context, Playlist playlist){
-        Intent intent = new Intent(context, SeriesEpisodesActivity.class);
+    public static void startActivity(Activity activity, ImageView imageView, Playlist playlist){
+        Intent intent = new Intent(activity, SeriesEpisodesActivity.class);
         intent.putExtra(PLAYLIST, playlist);
-        context.startActivity(intent);
+        activity.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(activity, imageView, "videoThumbnail").toBundle());
     }
 
-    //TODO: Implement loading state
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +83,14 @@ public class SeriesEpisodesActivity extends BaseActivity implements InfinityScro
         mRecyclerView.addOnScrollListener(mInfinityScrollListener);
         mAdapter = new VideoFeedArrayAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
-        loadMore(null);
 
+
+        mResponseObserver = new RetrofitResponseObserver<>();
+        mResponseObserver.addObserver(this);
+        mResponseObserver.addObserver(mNetworkMetaView);
+        mNetworkMetaView.setNetworkResultsContainer(mRecyclerView);
+        mNetworkMetaView.setOnRefreshListener(this);
+        loadMore(null);
 
         setSupportActionBar(mToolbar);
         if(getSupportActionBar() != null) {
@@ -78,8 +98,10 @@ public class SeriesEpisodesActivity extends BaseActivity implements InfinityScro
             mCollapsingToolbarLayout.setTitle(mPlaylist.title);
         }
 
-        Picasso.with(this).load(mPlaylist.thumbnail).transform(PaletteTransformation.instance())
-                .into(mToolbarBackdrop, new PaletteTransformation.PaletteCallback(mToolbarBackdrop) {
+
+        //TODO: Decide what to do here
+        Picasso.with(this).load(mPlaylist.thumbnail)/*.transform(PaletteTransformation.instance())*/
+                .into(mToolbarBackdrop/*, new PaletteTransformation.PaletteCallback(mToolbarBackdrop) {
                     @Override
                     public void onSuccess(Palette palette) {
                         mCollapsingToolbarLayout.setContentScrimColor(palette.getVibrantColor(getResources().getColor(R.color.default_card_background)));
@@ -90,7 +112,10 @@ public class SeriesEpisodesActivity extends BaseActivity implements InfinityScro
                     public void onError() {
 
                     }
-                });
+                }*/);
+        mCollapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.primary));
+        mCollapsingToolbarLayout.setStatusBarScrimColor(getResources().getColor(R.color.primary_dark));
+
     }
 
     @Override
@@ -102,9 +127,9 @@ public class SeriesEpisodesActivity extends BaseActivity implements InfinityScro
     @Override
     public void loadMore(String nextPageToken) {
         if (nextPageToken == null) {
-            API.getYoutubeService(this).getPlaylistItems(mPlaylist.id, this);
+            API.getYoutubeService(this).getPlaylistItems(mPlaylist.id, mResponseObserver);
         } else {
-            API.getYoutubeService(this).getPlaylistItems(mPlaylist.id, nextPageToken, this);
+            API.getYoutubeService(this).getPlaylistItems(mPlaylist.id, nextPageToken, mResponseObserver);
         }
     }
 
@@ -116,35 +141,35 @@ public class SeriesEpisodesActivity extends BaseActivity implements InfinityScro
 
         mInfinityScrollListener.setNextPageToken(videoList.nextPageToken);
         mInfinityScrollListener.setLoading(false);
+
     }
 
-
-    //TODO: Handle failure
     @Override
     public void failure(RetrofitError error) {
-        LOG.d(error.toString());
-        LOG.d(error.getMessage());
+        LOG.e(error.getMessage());
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_series, menu);
-        return true;
+    @Override
+    public void onRefresh() {
+        int size = mAdapter.videos.size();
+        mAdapter.videos.clear();
+        mAdapter.notifyItemRangeRemoved(0, size);
+        loadMore(null);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
-    }*/
+    }
+
+    @Override
+    public void onBackPressed() {
+        supportFinishAfterTransition();
+    }
 }

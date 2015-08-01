@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Zoella</string>
+	<string name="youtube_channel_id" translatable="false">UCWRV5AVOlKJR1Flvgt310Cw</string>
+
+	<string name="account_type" translatable="false">com.zoella</string>
+	<string name="content_authority" translatable="false">com.zoella</string>
+	<string name="youtube_channel_id_path_id">/channel/UCWRV5AVOlKJR1Flvgt310Cw</string>
+
+</resources>

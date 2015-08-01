@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.squareup.picasso.Picasso;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -12,12 +13,6 @@ import io.fabric.sdk.android.Fabric;
  * Created by Gil on 03/06/15.
  */
 public class App extends Application {
-
-
-    //TODO: Error screens
-    //TODO: Creating a new profile should be seamless
-    //TODO: Notifications
-
 
     private static Context mContext;
 
@@ -36,6 +31,9 @@ public class App extends Application {
                         .build());
 
         Fabric.with(this, new Crashlytics());
+
+//        Picasso.setSingletonInstance(new Picasso.Builder(this)
+//                .indicatorsEnabled(BuildConfig.DEBUG).build());
     }
 
     public static Context getContext() {

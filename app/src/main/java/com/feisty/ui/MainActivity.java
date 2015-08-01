@@ -6,7 +6,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Slide;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 
 import com.feisty.R;
@@ -17,6 +20,8 @@ import com.feisty.sync.SyncUtils;
 import com.feisty.ui.transformation.RoundedTransformation;
 import com.feisty.utils.Logger;
 import com.github.florent37.materialviewpager.MaterialViewPager;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -29,9 +34,6 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
 
     private static final Logger LOG = Logger.create();
 
-    @InjectView(R.id.progress_bar)
-    View mProgressBar;
-
     @InjectView(R.id.materialViewPager)
     MaterialViewPager mViewPager;
 
@@ -42,6 +44,7 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        getWindow().setExitTransition(new Explode());
 
         SyncUtils.createSyncAccount(this);
 
@@ -74,7 +77,6 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         ChannelList.Channel channel = channelList.channels.get(0);
         toolbar.setTitle(channel.snippet.title);
 
-        mProgressBar.setVisibility(View.GONE);
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setColor(getResources().getColor(R.color.primary), 400);
 
@@ -95,8 +97,6 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
     }
 
     class FragmentPagerAdapter extends FragmentStatePagerAdapter {
-
-//        int oldPosition = -1;
 
         public FragmentPagerAdapter(FragmentManager fm) {
             super(fm);

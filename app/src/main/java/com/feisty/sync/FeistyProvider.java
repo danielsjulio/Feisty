@@ -283,12 +283,15 @@ public class FeistyProvider extends android.content.ContentProvider {
                         Contacts.Playlist.COLUMN_NAME_PLAYLIST_ID + TYPE_TEXT + COMMA_SEP +
                         Contacts.Playlist.COLUMN_NAME_TITLE + TYPE_TEXT + ")";
 
+        private Context mContext;
+
         private String deleteTable(String tableName) {
             return "DROP TABLE IF EXISTS " + tableName;
         }
 
         public FeedDatabase(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
+            mContext = context;
         }
 
         @Override
@@ -304,6 +307,9 @@ public class FeistyProvider extends android.content.ContentProvider {
             db.execSQL(deleteTable(Contacts.Video.TABLE_NAME));
             db.execSQL(deleteTable(Contacts.Playlist.TABLE_NAME));
             onCreate(db);
+
+            //Trigger sync to repopulate the provider
+            SyncUtils.triggerRefresh(mContext);
         }
     }
 }

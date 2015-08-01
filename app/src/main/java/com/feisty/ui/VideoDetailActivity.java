@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,10 +57,14 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
 
     private InfinityScrollListener mInfinityScrollListener;
 
-    public static void startActivity(Context context, Video video){
+    public static Intent getIntent(Context context, Video video){
         Intent intent = new Intent(context, VideoDetailActivity.class);
         intent.putExtra(KEY_VIDEO, video);
-        context.startActivity(intent);
+        return intent;
+    }
+
+    public static void startActivity(Context context, Video video){
+        context.startActivity(getIntent(context, video));
     }
 
     @Override
@@ -116,7 +121,6 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
         mCommentsRecyclerViewAdapter.notifyItemRangeInserted(startRange, commentList.comments.size());
     }
 
-
     //TODO: Handle the error properly
     @Override
     public void failure(RetrofitError error) {
@@ -162,11 +166,15 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            switch (holder.getItemViewType()){
+            switch (holder.getItemViewType()) {
                 case HEADER_VIEW_TYPE:
                     HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
                     headerViewHolder.mNameView.setText(mVideo.title);
-                    headerViewHolder.mDescriptionView.setText(Html.fromHtml(mVideo.description));
+                    headerViewHolder.mDescriptionView.setText(Html.fromHtml(mVideo.description.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z|\\n)",
+                            "$1<a href=\"$2\">$2</a>$4").replace("\n","<br />")));
+                    headerViewHolder.mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
                     break;
                 case COMMENT_VIEW_TYPE:
                     CommentList.Comment comment = comments.get(position - 1);

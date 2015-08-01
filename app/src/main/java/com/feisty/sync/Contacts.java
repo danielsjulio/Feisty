@@ -90,7 +90,7 @@ public class Contacts {
             /**
              * Project used when querying content provider. Returns all known fields.
              */
-            static final String[] PROJECTION = new String[] {
+            public static final String[] PROJECTION = new String[] {
                     _ID,
                     COLUMN_NAME_VIDEO_ID,
                     COLUMN_NAME_TITLE,

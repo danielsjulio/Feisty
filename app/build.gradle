@@ -45,6 +45,12 @@ android {
 
 
         /** SIGNING CONFIG BELOW **/
+		zoellaFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/com.zoella.keystore'))
+			keyAlias 'com.zoella'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
 		caseyneistatFlavor {
 			storeFile file(new File(releaseRepoRoot, 'keys/com.caseyneistat.keystore'))
 			keyAlias 'com.caseyneistat'
@@ -72,6 +78,10 @@ android {
     }
     productFlavors {
         /** PRODUCT FLAVOR BELOW **/
+		zoellaFlavor {
+			applicationId 'com.zoella'
+			signingConfig signingConfigs.zoellaFlavor 
+		}
 		caseyneistatFlavor {
 			applicationId 'com.caseyneistat'
 			signingConfig signingConfigs.caseyneistatFlavor 

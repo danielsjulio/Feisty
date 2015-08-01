@@ -243,6 +243,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
         c.close();
 
+
+        //Show notification if it isn't first sync
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean firstSync = preferences.getBoolean(FIRST_SYNC, true);
 
@@ -253,8 +255,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } else {
             triggerNotification(videoMap);
         }
-
-        triggerNotification(videoMap);
 
         // Add new items
         for (VideoList.Video e : videoMap.values()) {
@@ -290,7 +290,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             });
 
-//            Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_launcher);
             Bitmap icon = null;
             try {
                 icon = Picasso.with(getContext())

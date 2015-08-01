@@ -5,4 +5,6 @@
 
 	<string name="account_type" translatable="false">com.caseyneistat</string>
 	<string name="content_authority" translatable="false">com.caseyneistat</string>
+
+	<string name="youtube_channel_id_path_id">/channel/UCtinbF-Q-fVthA0qrFQTgXQ</string>
 </resources>
