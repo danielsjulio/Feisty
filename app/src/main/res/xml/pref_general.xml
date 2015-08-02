@@ -11,7 +11,7 @@
             android:title="New video"
             android:summaryOn="Notifications will be sent when a new video is uploaded"
             android:summaryOff="Notification won't be sent when a new video is uploaded"
-            android:defaultValue="false"/>
+            android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="More information">

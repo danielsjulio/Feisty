@@ -247,11 +247,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         //Show notification if it isn't first sync
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean firstSync = preferences.getBoolean(FIRST_SYNC, true);
+        boolean notify = preferences.getBoolean(getContext().getResources().getString(R.string.sp_key_video_notifications), true);
 
         if (firstSync) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean(FIRST_SYNC, false);
             editor.commit();
+        } else if (!notify) {
+
         } else {
             triggerNotification(videoMap);
         }
