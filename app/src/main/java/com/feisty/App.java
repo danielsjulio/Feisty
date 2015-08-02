@@ -36,6 +36,8 @@ public class App extends Application {
 
         Fabric.with(this, new Crashlytics());
 
+        AnalyticsTrackers.initialize(this);
+
 //        Picasso.setSingletonInstance(new Picasso.Builder(this)
 //                .indicatorsEnabled(BuildConfig.DEBUG).build());
     }

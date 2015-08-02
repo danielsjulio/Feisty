@@ -3,6 +3,7 @@ package com.feisty.ui;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -161,7 +162,9 @@ public class SeriesListFragment extends Fragment implements Callback<SeriesList>
             holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    holder.mThumbnailView.setTransitionName("videoThumbnail");
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        holder.mThumbnailView.setTransitionName("videoThumbnail");
+                    }
                     SeriesEpisodesActivity.startActivity(getActivity(), holder.mThumbnailView,
                             new Playlist(series.id, series.snippet.title, series.snippet.description, series.snippet.thumbnails.high.url));
                 }

@@ -1,6 +1,7 @@
 package com.feisty.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 
+import com.feisty.BuildConfig;
 import com.feisty.R;
 import com.feisty.model.youtube.ChannelList;
 import com.feisty.net.API;
@@ -46,7 +48,9 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
-        getWindow().setExitTransition(new Explode());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setExitTransition(new Explode());
+        }
 
         SyncUtils.createSyncAccount(this);
 

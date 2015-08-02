@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <!-- Required to enable our SyncAdapter after it's created. -->
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -20,28 +21,35 @@
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityTheme">
+            android:launchMode="singleTop"
+            android:theme="@style/MainActivityTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter android:label="@string/app_name">
+            <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http"
+
+                <data
                     android:host="www.youtube.com"
-                    android:pathPrefix="@string/youtube_channel_id_path_id" />
-                <data android:scheme="http"
+                    android:pathPrefix="@string/youtube_channel_id_path_id"
+                    android:scheme="http" />
+                <data
                     android:host="m.youtube.com"
-                    android:pathPrefix="@string/youtube_channel_id_path_id" />
-                <data android:scheme="https"
+                    android:pathPrefix="@string/youtube_channel_id_path_id"
+                    android:scheme="http" />
+                <data
                     android:host="www.youtube.com"
-                    android:pathPrefix="@string/youtube_channel_id_path_id" />
-                <data android:scheme="https"
+                    android:pathPrefix="@string/youtube_channel_id_path_id"
+                    android:scheme="https" />
+                <data
                     android:host="m.youtube.com"
-                    android:pathPrefix="@string/youtube_channel_id_path_id" />
+                    android:pathPrefix="@string/youtube_channel_id_path_id"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity
@@ -114,7 +122,8 @@
         <activity
             android:name=".ui.SeriesEpisodesActivity"
             android:label="@string/title_activity_series"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTop" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.feisty.ui.MainActivity" />
@@ -122,14 +131,18 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/SettingsActivityTheme"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/SettingsActivityTheme" >
         </activity>
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity" >
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

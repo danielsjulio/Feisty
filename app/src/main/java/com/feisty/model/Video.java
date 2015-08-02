@@ -1,5 +1,6 @@
 package com.feisty.model;
 
+import com.feisty.model.youtube.Thumbnails;
 import com.feisty.model.youtube.VideoList;
 
 import java.io.Serializable;
@@ -47,6 +48,14 @@ public class Video implements Serializable {
     }
 
     public static Video toVideo(VideoList.Video video){
-        return new Video(video.snippet.resourceId.videoId, video.snippet.title, video.snippet.description, video.snippet.thumbnails.high.url, video.snippet.publishedAt);
+        Thumbnails.Thumbnail thumbnail = null;
+        if(video.snippet.thumbnails != null){
+            thumbnail = video.snippet.thumbnails.high;
+        } else if(video.snippet.thumbnails != null){
+            thumbnail = video.snippet.thumbnails.medium;
+        } else {
+            thumbnail = video.snippet.thumbnails.regular;
+        }
+        return new Video(video.snippet.resourceId.videoId, video.snippet.title, video.snippet.description, thumbnail.url, video.snippet.publishedAt);
     }
 }

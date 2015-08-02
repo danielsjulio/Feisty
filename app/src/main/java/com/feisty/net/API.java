@@ -43,7 +43,7 @@ public class API {
 
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setEndpoint("https://www.googleapis.com")
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setLogLevel(RestAdapter.LogLevel.NONE)
                     .setConverter(new GsonConverter(gson))
                     .setClient(new OkClient(client))
 //                    .setErrorHandler(new CustomErrorHandler(context))

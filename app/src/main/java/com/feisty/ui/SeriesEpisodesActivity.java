@@ -2,9 +2,11 @@ package com.feisty.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -59,7 +61,11 @@ public class SeriesEpisodesActivity extends BaseActivity
     public static void startActivity(Activity activity, ImageView imageView, Playlist playlist){
         Intent intent = new Intent(activity, SeriesEpisodesActivity.class);
         intent.putExtra(PLAYLIST, playlist);
-        activity.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(activity, imageView, "videoThumbnail").toBundle());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(activity, imageView, "videoThumbnail").toBundle());
+        } else {
+            activity.startActivity(intent);
+        }
     }
 
     @Override
@@ -156,14 +162,9 @@ public class SeriesEpisodesActivity extends BaseActivity
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                supportFinishAfterTransition();
+                NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        supportFinishAfterTransition();
     }
 }

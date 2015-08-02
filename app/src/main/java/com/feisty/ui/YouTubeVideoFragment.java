@@ -144,7 +144,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+        /*getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
             @Override
             public void onSystemUiVisibilityChange(int visibility) {
 //                getActivity().getWindow().getDecorView().setSystemUiVisibility(FULL);
@@ -156,7 +156,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
                     }
                 }
             }
-        });
+        });*/
     }
 
 
