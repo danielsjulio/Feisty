@@ -1,7 +1,6 @@
 package com.feisty.sync;
 
 import android.accounts.Account;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
@@ -16,9 +15,11 @@ import android.content.SyncResult;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.TimingLogger;
 
 import com.feisty.R;
@@ -312,11 +313,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             Intent intent = VideoDetailActivity.getIntent(getContext(), first);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            Notification.Builder notification = new Notification.Builder(getContext())
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(getContext())
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.ic_new_video_notification)
+                    .setAutoCancel(true)
                     .setLargeIcon(icon);
-
 
             if(single) {
                 notification.setContentTitle(first.title);
@@ -328,15 +329,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                         .getQuantityString(R.plurals.notification_uploads, videos.size(), videos.size());
                 notification.setContentInfo(uploadCount);
 
-                Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
-                inboxStyle.setBigContentTitle(first.title);
-                inboxStyle.setSummaryText(appName);
-                notification.setStyle(inboxStyle);
-                for (Video video : videos) {
-                    inboxStyle.addLine(video.title);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+                    inboxStyle.setBigContentTitle(first.title);
+                    inboxStyle.setSummaryText(appName);
+                    notification.setStyle(inboxStyle);
+                    for (Video video : videos) {
+                        inboxStyle.addLine(video.title);
+                    }
                 }
             }
-
 
             NotificationManager notificationManager =
                     (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
