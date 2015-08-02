@@ -2,6 +2,7 @@ package com.feisty.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -16,6 +17,14 @@ import android.widget.Toast;
 
 import com.feisty.BuildConfig;
 import com.feisty.R;
+import com.feisty.model.Video;
+import com.feisty.sync.Contacts;
+import com.feisty.sync.FeistyProvider;
+import com.feisty.sync.SyncAdapter;
+import com.feisty.sync.SyncUtils;
+
+import java.text.ParseException;
+import java.util.ArrayList;
 
 
 /**
@@ -85,9 +94,6 @@ public class SettingsActivity extends BaseActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-//            getPreferenceManager().setSharedPreferencesName(getString(R.string._gardens_preferences));
-//            getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
-
             mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
             addPreferencesFromResource(R.xml.pref_general);
@@ -124,6 +130,16 @@ public class SettingsActivity extends BaseActivity {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                 }
                 return true;
+            } else if(preference.getKey() != null && preference.getKey().equals("trigger_sync")){
+                SyncUtils.triggerRefresh(getActivity());
+                Toast.makeText(getActivity(), "Triggered sync", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (preference.getKey() != null && preference.getKey().equals("send_notification_one")){
+                triggerTestNotification(1);
+                return true;
+            } else if (preference.getKey() != null && preference.getKey().equals("send_notification_five")){
+                triggerTestNotification(5);
+                return true;
             } else {
                 return super.onPreferenceTreeClick(preferenceScreen, preference);
             }
@@ -144,6 +160,32 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        }
+
+        private void triggerTestNotification(int count){
+            Cursor cursor = getActivity().getContentResolver().query(Contacts.Video.CONTENT_URI,
+                    Contacts.Video.PROJECTION.PROJECTION,
+                    null,
+                    null,
+                    Contacts.Video.COLUMN_NAME_PUBLISHED + " desc LIMIT " + count);
+
+            final ArrayList<Video> videos = new ArrayList<>();
+
+            try {
+                while(cursor.moveToNext()) {
+                    videos.add(Video.toVideo(cursor));
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SyncAdapter.triggerNotification(getActivity(), videos);
+                    }
+                }).start();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Toast.makeText(getActivity(), "Failed to get videos", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }

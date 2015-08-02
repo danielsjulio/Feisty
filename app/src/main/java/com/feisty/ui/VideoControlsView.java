@@ -93,16 +93,32 @@ public class VideoControlsView extends FrameLayout implements
     }
 
     private void init() {
+        setVisibility(View.GONE);
         View view = inflate(getContext(), R.layout.custom_video_overlay, this);
         ButterKnife.inject(view, this);
         mSeekBar.setOnSeekBarChangeListener(this);
-        setVisibility(View.GONE);
 
         VideoDetailActivity activity = ((VideoDetailActivity) getContext());
         activity.setSupportActionBar(mToolbar);
         activity.getSupportActionBar().setHomeButtonEnabled(true);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setTitle("");
+    }
+
+    private void hackHideElements(boolean hide){
+        mProgressSeekbar.setVisibility(GONE);
+        mPlayBtn.setVisibility(GONE);
+        mPauseBtn.setVisibility(GONE);
+        mBufferingProgressBar.setVisibility(GONE);
+        if(hide){
+            setVisibility(View.GONE);
+            mToolbar.setVisibility(GONE);
+            mControlsContainer.setVisibility(GONE);
+        } else {
+            setVisibility(View.VISIBLE);
+            mControlsContainer.setVisibility(VISIBLE);
+            mToolbar.setVisibility(VISIBLE);
+        }
     }
 
     private static String formatTime(int milliseconds){
@@ -127,7 +143,11 @@ public class VideoControlsView extends FrameLayout implements
         updateSeekInfo();
 
 //        mBufferingProgressBar.setVisibility(GONE);
-        setVisibility(VISIBLE);
+
+
+        hackHideElements(false);
+        //TODO: HACK START
+/*        setVisibility(VISIBLE);
         mControlsContainer.setAlpha(0);
         mControlsContainer.setVisibility(VISIBLE);
         mControlsContainer.setScaleX(1.2F);
@@ -163,7 +183,10 @@ public class VideoControlsView extends FrameLayout implements
                 })
                 .start();
 
-        mPlayBtn.setVisibility(GONE);
+        mPlayBtn.setVisibility(GONE);*/
+        //HACK FINISHED
+
+
         /*mPauseBtn.setVisibility(VISIBLE);
         mPauseBtn.setAlpha(0);
         mPauseBtn.setScaleX(0.8F);
@@ -207,9 +230,14 @@ public class VideoControlsView extends FrameLayout implements
 
     public void hide(){
 //        mBufferingProgressBar.setVisibility(GONE);
-        mControlsContainer.setVisibility(GONE);
+
+        //Hack start
+        /*mControlsContainer.setVisibility(GONE);
         if(!isBuffering)
-            setVisibility(GONE);
+            setVisibility(GONE);*/
+        //HACK finished
+
+        hackHideElements(true);
 
         View decorView = ((Activity)getContext()).getWindow().getDecorView();
         // Hide the status bar.

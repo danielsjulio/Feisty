@@ -20,6 +20,7 @@ public class VideoList extends RestContainer {
 
         public Statistics statistics;
         public ContentDetails contentDetails;
+        public Status status;
 
         public class Id {
             public String king;
@@ -54,6 +55,10 @@ public class VideoList extends RestContainer {
             public String dimension;//wether it is 3d or 2d
             public String definition;//example: "hd"
             public boolean licensedContent;
+        }
+
+        public class Status {
+            public String privacyStatus;
         }
     }
 }

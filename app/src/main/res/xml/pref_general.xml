@@ -3,6 +3,19 @@
     <PreferenceCategory android:title="Developer Options"
         android:key="dev_options_category">
 
+        <Preference
+            android:key="trigger_sync"
+            android:title="Trigger sync"/>
+
+        <Preference
+            android:key="send_notification_one"
+            android:title="Send notification"
+            android:summary="1 video" />
+
+        <Preference
+            android:key="send_notification_five"
+            android:title="Send notification"
+            android:summary="5 videos" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Notifications">

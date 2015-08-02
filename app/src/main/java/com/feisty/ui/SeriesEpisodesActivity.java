@@ -1,7 +1,11 @@
 package com.feisty.ui;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -12,6 +16,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.feisty.R;
@@ -53,6 +59,9 @@ public class SeriesEpisodesActivity extends BaseActivity
     @InjectView(R.id.network_meta_view)
     NetworkMetaView mNetworkMetaView;
 
+    @InjectView(R.id.backdrop_container)
+    FrameLayout mBackdropContainer;
+
     private Playlist mPlaylist;
     private InfinityScrollListener mInfinityScrollListener;
     private VideoFeedArrayAdapter mAdapter;
@@ -73,6 +82,18 @@ public class SeriesEpisodesActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_series);
         ButterKnife.inject(this);
+
+        Drawable gradient = mBackdropContainer.getForeground();
+        gradient.setAlpha(0);
+        ObjectAnimator anim = ObjectAnimator
+                .ofPropertyValuesHolder(gradient,
+                        PropertyValuesHolder.ofInt("alpha", 0, 255));
+        anim.setTarget(gradient);
+        anim.setDuration(400);
+        anim.setStartDelay(400);
+        anim.start();
+
+
 
         Intent intent = getIntent();
         mPlaylist = (Playlist) intent.getSerializableExtra(PLAYLIST);
@@ -162,7 +183,11 @@ public class SeriesEpisodesActivity extends BaseActivity
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    finishAfterTransition();
+                } else {
+                    finish();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);

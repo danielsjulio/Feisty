@@ -2,7 +2,10 @@ package com.feisty.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -112,6 +116,34 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                    // This activity is NOT part of this app's task, so create a new task
+                    // when navigating up, with a synthesized back stack.
+                    TaskStackBuilder.create(this)
+                            // Add all of this activity's parents to the back stack
+                            .addNextIntentWithParentStack(upIntent)
+                                    // Navigate up to the closest parent
+                            .startActivities();
+                } else {
+                    // This activity is part of this app's task, so simply
+                    // navigate up to the logical parent activity.
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        finishAfterTransition();
+                    } else {
+                        finish();
+                    }
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void success(CommentList commentList, Response response) {
         mInfinityScrollListener.setNextPageToken(commentList.nextPageToken);
         mInfinityScrollListener.finishedLoad();
@@ -186,6 +218,17 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
                             commentViewHolder.mRepliesContainer.addView(view.itemView);
                         }
                     }
+                    break;
+            }
+        }
+
+        @Override
+        public void onViewRecycled(RecyclerView.ViewHolder holder) {
+            super.onViewRecycled(holder);
+            switch (holder.getItemViewType()){
+                case COMMENT_VIEW_TYPE:
+                    CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
+                    commentViewHolder.mRepliesContainer.removeAllViews();
                     break;
             }
         }

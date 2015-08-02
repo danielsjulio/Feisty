@@ -56,7 +56,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private final ContentResolver mContentResolver;
 
-    private static DateFormat sDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+    public final static DateFormat sDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
 
     public static int VIDEO_NOTIFICATION_ID = 4237;
 
@@ -257,7 +257,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } else if (!notify) {
 
         } else {
-            triggerNotification(videoMap);
+            prepareVideosNotification(videoMap);
         }
 
         // Add new items
@@ -283,7 +283,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // syncToNetwork=false in the line above to prevent duplicate syncs.
     }
 
-    private void triggerNotification(HashMap<String, VideoList.Video> map) {
+    private void prepareVideosNotification(HashMap<String, VideoList.Video> map){
         if (!map.isEmpty()) {
 
             ArrayList<Video> videos = (ArrayList<Video>) Video.toVideos(new ArrayList<>(map.values()));
@@ -293,56 +293,60 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     return lhs.publishedAt.after(rhs.publishedAt) ? 1 : 0;
                 }
             });
+            triggerNotification(getContext(), videos);
+        }
+    }
 
-            Bitmap icon = null;
-            try {
-                icon = Picasso.with(getContext())
-                        .load(R.mipmap.ic_launcher)
-                        .resize(128, 128)
-                        .centerInside()
-                        .transform(new RoundedTransformation(1000, 0))
-                        .get();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public static void triggerNotification(Context context, ArrayList<Video> videos) {
+        Bitmap icon = null;
+        try {
+            icon = Picasso.with(context)
+                    .load(R.mipmap.ic_launcher)
+                    .resize(128, 128)
+                    .centerInside()
+                    .transform(new RoundedTransformation(1000, 0))
+                    .get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            boolean single = videos.size() == 1;
-            Video first = videos.get(0);
-            String appName = getContext().getString(R.string.app_name);
+        boolean single = videos.size() == 1;
+        Video first = videos.get(0);
+        String appName = context.getString(R.string.app_name);
 
-            Intent intent = VideoDetailActivity.getIntent(getContext(), first);
+        Intent intent = VideoDetailActivity.getIntent(context, first);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(getContext())
-                    .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.drawable.ic_new_video_notification)
-                    .setAutoCancel(true)
-                    .setLargeIcon(icon);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.ic_new_video_notification)
+                .setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE)
+                .setLargeIcon(icon);
 
-            if(single) {
-                notification.setContentTitle(first.title);
-                notification.setContentText("New upload from " + appName);
-            } else {
-                notification.setContentTitle(appName + " uploaded " + videos.size() + " new videos");
-                notification.setContentText(first.title);
-                String uploadCount = getContext().getResources()
-                        .getQuantityString(R.plurals.notification_uploads, videos.size(), videos.size());
-                notification.setContentInfo(uploadCount);
+        if(single) {
+            notification.setContentTitle(first.title);
+            notification.setContentText("New upload from " + appName);
+        } else {
+            notification.setContentTitle(appName + " uploaded " + videos.size() + " new videos");
+            notification.setContentText(first.title);
+            String uploadCount = context.getResources()
+                    .getQuantityString(R.plurals.notification_uploads, videos.size(), videos.size());
+            notification.setContentInfo(uploadCount);
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-                    inboxStyle.setBigContentTitle(first.title);
-                    inboxStyle.setSummaryText(appName);
-                    notification.setStyle(inboxStyle);
-                    for (Video video : videos) {
-                        inboxStyle.addLine(video.title);
-                    }
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+                inboxStyle.setBigContentTitle(first.title);
+                inboxStyle.setSummaryText(appName);
+                notification.setStyle(inboxStyle);
+                for (Video video : videos) {
+                    inboxStyle.addLine(video.title);
                 }
             }
-
-            NotificationManager notificationManager =
-                    (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(VIDEO_NOTIFICATION_ID, notification.build());
         }
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(VIDEO_NOTIFICATION_ID, notification.build());
     }
 }

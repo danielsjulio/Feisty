@@ -136,7 +136,7 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         container.addView(rootView);
         mControlsOverlay = new VideoControlsView(getActivity());
         mControlsOverlay.setFullscreenButtonListener(this);
-//        container.addView(mControlsOverlay);
+        container.addView(mControlsOverlay);
         return container;
     }
 
