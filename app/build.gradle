@@ -44,6 +44,30 @@ android {
         keyProps.load(new FileInputStream(file(new File(releaseRepoRoot, 'keystore-passwords.properties'))))
 
         /** SIGNING CONFIG BELOW **/
+		russelbrandFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/com.russelbrand.keystore'))
+			keyAlias 'com.russelbrand'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
+		pewdiepieFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/app.pewdiepie.keystore'))
+			keyAlias 'app.pewdiepie'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
+		schooloflifeFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/com.schooloflife.keystore'))
+			keyAlias 'com.schooloflife'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
+		charlesveitchFlavor {
+			storeFile file(new File(releaseRepoRoot, 'keys/com.charlesveitch.keystore'))
+			keyAlias 'com.charlesveitch'
+			storePassword keyProps['storePassword']
+			keyPassword keyProps['keyPassword']
+		}
         zoellaFlavor {
             storeFile file(new File(releaseRepoRoot, 'keys/com.zoella.keystore'))
             keyAlias 'com.zoella'
@@ -61,6 +85,10 @@ android {
             keyAlias "com.tomscott"
             storePassword keyProps["storePassword"]
             keyPassword keyProps["keyPassword"]
+            print "tomscottFlavor"
+        }
+        tomscottFlavorDebug {
+            print "tomscottFlavorDebug"
         }
     }
 
@@ -77,6 +105,22 @@ android {
     }
     productFlavors {
         /** PRODUCT FLAVOR BELOW **/
+		russelbrandFlavor {
+			applicationId 'com.russelbrand'
+			signingConfig signingConfigs.russelbrandFlavor 
+		}
+		pewdiepieFlavor {
+			applicationId 'app.pewdiepie'
+			signingConfig signingConfigs.pewdiepieFlavor 
+		}
+		schooloflifeFlavor {
+			applicationId 'com.schooloflife'
+			signingConfig signingConfigs.schooloflifeFlavor 
+		}
+		charlesveitchFlavor {
+			applicationId 'com.charlesveitch'
+			signingConfig signingConfigs.charlesveitchFlavor 
+		}
         zoellaFlavor {
             applicationId 'com.zoella'
             signingConfig signingConfigs.zoellaFlavor 
@@ -101,7 +145,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.github.florent37:materialviewpager:1.0.3.2@aar') {
+    compile('com.github.florent37:materialviewpager:1.1.0@aar') {
         transitive = true
     }
     compile 'com.squareup.retrofit:retrofit:1.9.0'

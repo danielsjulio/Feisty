@@ -55,7 +55,6 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         Bundle bundle = getArguments();
         String videoId = bundle.getString(KEY_VIDEO_ID);
         setVideoId(videoId);
-        initialize(getString(R.string.youtube_player_api_key), this);
     }
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -115,6 +114,19 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
 
             return true;
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        player = null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initialize(getString(R.string.youtube_player_api_key), this);
+
     }
 
     @Override
@@ -212,7 +224,9 @@ public final class YouTubeVideoFragment extends YouTubePlayerSupportFragment
         });
 
         int controlFlags = player.getFullscreenControlFlags();
-        getActivity().setRequestedOrientation(PORTRAIT_ORIENTATION);
+        if(getActivity() != null) {
+            getActivity().setRequestedOrientation(PORTRAIT_ORIENTATION);
+        }
         controlFlags |= YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE;
         player.setFullscreenControlFlags(controlFlags);
 

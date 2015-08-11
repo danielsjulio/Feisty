@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.feisty.AnalyticsTrackers;
 import com.feisty.R;
 import com.feisty.model.youtube.CommentList;
 import com.feisty.model.Video;
@@ -29,6 +31,8 @@ import com.feisty.net.API;
 import com.feisty.ui.listeners.InfinityScrollListener;
 import com.feisty.ui.transformation.RoundedTransformation;
 import com.feisty.utils.Logger;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -47,6 +51,8 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
 
     public static final String KEY_VIDEO = "VIDEO";
 
+    public static final String KEY_REF = "ref";
+
     @InjectView(R.id.comments_recyclerview)
     RecyclerView mCommentsRecyclerView;
 
@@ -54,16 +60,19 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
     FrameLayout mContainer;
 
     private YouTubeVideoFragment mYouTubeVideoFragment;
-
     private CommentsRecyclerViewAdapter mCommentsRecyclerViewAdapter;
-
-    private Video mVideo;
-
     private InfinityScrollListener mInfinityScrollListener;
+    private Video mVideo;
 
     public static Intent getIntent(Context context, Video video){
         Intent intent = new Intent(context, VideoDetailActivity.class);
         intent.putExtra(KEY_VIDEO, video);
+        return intent;
+    }
+    public static Intent getIntent(Context context, Video video, String referral){
+        Intent intent = new Intent(context, VideoDetailActivity.class);
+        intent.putExtra(KEY_VIDEO, video);
+        intent.putExtra(KEY_REF, referral);
         return intent;
     }
 
@@ -76,6 +85,10 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_detail);
         ButterKnife.inject(this);
+
+        Tracker t = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+        t.setScreenName("VideoDetailActivity");
+        t.send(new HitBuilders.ScreenViewBuilder().build());
 
         Intent intent = getIntent();
         mVideo = (Video) intent.getSerializableExtra(KEY_VIDEO);
@@ -109,7 +122,7 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
 
     @Override
     public void onBackPressed() {
-        if (mYouTubeVideoFragment.onBackPressed()){
+        if (mYouTubeVideoFragment != null && mYouTubeVideoFragment.onBackPressed()) {
             return;
         }
         super.onBackPressed();
@@ -120,16 +133,22 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                Intent upIntent = NavUtils.getParentActivityIntent(this);
-                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+//                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                Intent upIntent = new Intent(this, MainActivity.class);
+                Intent intent = getIntent();
+                String ref = intent.getStringExtra(KEY_REF);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent) || "notification".equals(ref)) {
+//                    LOG.d("shouldUpRecreateTask");
                     // This activity is NOT part of this app's task, so create a new task
                     // when navigating up, with a synthesized back stack.
                     TaskStackBuilder.create(this)
                             // Add all of this activity's parents to the back stack
-                            .addNextIntentWithParentStack(upIntent)
+                            .addNextIntent(upIntent)
                                     // Navigate up to the closest parent
                             .startActivities();
+                    finish();
                 } else {
+//                    NavUtils.navigateUpTo(this, upIntent);
                     // This activity is part of this app's task, so simply
                     // navigate up to the logical parent activity.
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -202,8 +221,17 @@ public class VideoDetailActivity extends BaseActivity implements Callback<Commen
                 case HEADER_VIEW_TYPE:
                     HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
                     headerViewHolder.mNameView.setText(mVideo.title);
-                    headerViewHolder.mDescriptionView.setText(Html.fromHtml(mVideo.description.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z|\\n)",
-                            "$1<a href=\"$2\">$2</a>$4").replace("\n","<br />")));
+                    try {
+                        String body = mVideo.description.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z|\\n)",
+                                "$1<a href=\"$2\">$2</a>$4").replace("\n", "<br />");
+                        Spanned spanned = Html.fromHtml(body);
+                        headerViewHolder.mDescriptionView.setText(spanned);
+                    } catch (Exception e){
+                        e.printStackTrace();
+
+                        //TODO: Investigate why it was crashing, maybe the description is null?
+                        LOG.e("An error occurred converting description to HMTL spanned text. Description: " + mVideo.description);
+                    }
                     headerViewHolder.mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
 
 

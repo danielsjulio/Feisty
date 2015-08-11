@@ -1,12 +1,16 @@
 package com.feisty.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.view.Menu;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 
+import com.feisty.AnalyticsTrackers;
 import com.feisty.BuildConfig;
 import com.feisty.R;
 import com.feisty.model.youtube.ChannelList;
@@ -24,6 +29,8 @@ import com.feisty.sync.SyncUtils;
 import com.feisty.ui.transformation.RoundedTransformation;
 import com.feisty.utils.Logger;
 import com.github.florent37.materialviewpager.MaterialViewPager;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -38,6 +45,8 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
 
     private static final Logger LOG = Logger.create();
 
+    public static final String KEY_MORE_FEATURES_SOON = "shown_more_features_soon";
+
     @InjectView(R.id.materialViewPager)
     MaterialViewPager mViewPager;
 
@@ -48,6 +57,20 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+
+        Tracker t = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+        t.setScreenName("MainActivity");
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!preferences.getBoolean(KEY_MORE_FEATURES_SOON, false)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Welcome " + new String(Character.toChars(0x1F64B)))
+                    .setMessage("We have just launched this new app. We understand that there is limited amount of functionality on the app but we're working on this - promise!")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            preferences.edit().putBoolean(KEY_MORE_FEATURES_SOON, true).commit();
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setExitTransition(new Explode());
         }
@@ -86,7 +109,9 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setColor(getResources().getColor(R.color.primary), 400);
 
-        mViewPager.setImageUrl(channel.brandingSettings.images.bannerTvLowImageUrl, 400);
+        if(!getResources().getBoolean(R.bool.solid_action_bar)) {
+            mViewPager.setImageUrl(channel.brandingSettings.images.bannerTvLowImageUrl, 400);
+        }
         ImageView thumbnail = (ImageView) mViewPager.findViewById(R.id.toolbar_logo);
 
         Picasso.with(this)
@@ -94,6 +119,12 @@ public class MainActivity extends BaseActivity implements Callback<ChannelList> 
                 .transform(new RoundedTransformation(1000, 0))
                 .into(thumbnail);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mViewPager.notifyHeaderChanged();
     }
 
     @Override

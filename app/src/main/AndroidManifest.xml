@@ -17,10 +17,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+            <!--android:screenOrientation="portrait"-->
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:theme="@style/MainActivityTheme" >
             <intent-filter>
@@ -55,7 +55,7 @@
         <activity
             android:name=".ui.VideoDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:parentActivityName=".ui.MainActivity"
+            android:parentActivityName="com.feisty.ui.MainActivity"
             android:screenOrientation="sensor"
             android:theme="@style/AppTheme.SolidStatusBar" >
             <meta-data
@@ -119,6 +119,7 @@
                 android:resource="@xml/authenticator" />
         </service>
 
+        <!--android:screenOrientation="portrait"-->
         <activity
             android:name=".ui.SeriesEpisodesActivity"
             android:label="@string/title_activity_series"
@@ -132,15 +133,17 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".ui.MainActivity"
-            android:theme="@style/SettingsActivityTheme" >
+            android:theme="@style/SettingsActivityTheme"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+                android:value="com.feisty.ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".ui.MainActivity" >
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />

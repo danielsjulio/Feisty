@@ -9,6 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/list_item_card_big"
+        android:paddingLeft="@dimen/activity_horizontal_margin_extra"
+        android:paddingRight="@dimen/activity_horizontal_margin_extra"
+        android:clipToPadding="false"
         />
 
     <com.feisty.ui.views.NetworkMetaView

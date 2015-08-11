@@ -314,9 +314,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Video first = videos.get(0);
         String appName = context.getString(R.string.app_name);
 
-        Intent intent = VideoDetailActivity.getIntent(context, first);
+        Intent intent = VideoDetailActivity.getIntent(context, first, "notification");
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_new_video_notification)
@@ -326,7 +326,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         if(single) {
             notification.setContentTitle(first.title);
-            notification.setContentText("New upload from " + appName);
+            notification.setContentText(appName + " uploaded a new video.");
         } else {
             notification.setContentTitle(appName + " uploaded " + videos.size() + " new videos");
             notification.setContentText(first.title);

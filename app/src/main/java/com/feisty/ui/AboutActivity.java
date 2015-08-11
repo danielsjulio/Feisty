@@ -2,16 +2,21 @@ package com.feisty.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.feisty.AnalyticsTrackers;
 import com.feisty.R;
 import com.feisty.model.youtube.About;
 import com.feisty.net.API;
 import com.feisty.utils.Logger;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -59,6 +64,10 @@ public class AboutActivity extends BaseActivity implements Callback<About> {
         setContentView(R.layout.activity_about);
         ButterKnife.inject(this);
 
+        Tracker t = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+        t.setScreenName("AboutActivity");
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+
         setSupportActionBar(mToolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -88,26 +97,15 @@ public class AboutActivity extends BaseActivity implements Callback<About> {
         LOG.d(error.getMessage());
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_series, menu);
-        return true;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
 }

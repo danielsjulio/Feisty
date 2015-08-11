@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin_extra">16dp</dimen>
+
+    <dimen name="cardMarginHorizontal">12dp</dimen>
+    <dimen name="cardMarginVertical">12dp</dimen>
+</resources>

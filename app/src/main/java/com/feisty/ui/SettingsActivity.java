@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.feisty.AnalyticsTrackers;
 import com.feisty.BuildConfig;
 import com.feisty.R;
 import com.feisty.model.Video;
@@ -22,6 +23,8 @@ import com.feisty.sync.Contacts;
 import com.feisty.sync.FeistyProvider;
 import com.feisty.sync.SyncAdapter;
 import com.feisty.sync.SyncUtils;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -45,6 +48,10 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        Tracker t = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+        t.setScreenName("SettingsActivity");
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.action_settings));
         setSupportActionBar(toolbar);
@@ -66,7 +73,6 @@ public class SettingsActivity extends BaseActivity {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-//                overridePendingTransition(R.anim.scale_up, R.anim.slide_down);
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -96,6 +96,7 @@ public class VideoControlsView extends FrameLayout implements
         setVisibility(View.GONE);
         View view = inflate(getContext(), R.layout.custom_video_overlay, this);
         ButterKnife.inject(view, this);
+        hackHideElements(true);
         mSeekBar.setOnSeekBarChangeListener(this);
 
         VideoDetailActivity activity = ((VideoDetailActivity) getContext());

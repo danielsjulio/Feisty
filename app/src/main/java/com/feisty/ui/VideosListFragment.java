@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,9 +38,16 @@ public class VideosListFragment extends Fragment implements LoaderManager.Loader
 
     @InjectView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+    private int mColumnCount;
 
     public static VideosListFragment newInstance() {
         return new VideosListFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mColumnCount = getResources().getInteger(R.integer.column_count);
     }
 
     @Override
@@ -51,8 +59,10 @@ public class VideosListFragment extends Fragment implements LoaderManager.Loader
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), mColumnCount);
         mRecyclerView.setLayoutManager(layoutManager);
+//        mRecyclerView.addItemDecoration(new SpacesItemDecoration(getActivity(),
+//                R.dimen.cardMarginHorizontal, R.dimen.cardMarginVertical));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -74,7 +84,7 @@ public class VideosListFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedCursorAdapter(getActivity(), data));
+        mAdapter = new RecyclerViewMaterialAdapter(new VideoFeedCursorAdapter(getActivity(), data), mColumnCount);
         mRecyclerView.setAdapter(mAdapter);
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
 

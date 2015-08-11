@@ -12,6 +12,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +21,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.feisty.AnalyticsTrackers;
 import com.feisty.R;
 import com.feisty.model.Playlist;
 import com.feisty.model.Video;
@@ -29,6 +31,8 @@ import com.feisty.ui.listeners.InfinityScrollListener;
 import com.feisty.ui.listeners.RetrofitResponseObserver;
 import com.feisty.ui.views.NetworkMetaView;
 import com.feisty.utils.Logger;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -66,6 +70,7 @@ public class SeriesEpisodesActivity extends BaseActivity
     private InfinityScrollListener mInfinityScrollListener;
     private VideoFeedArrayAdapter mAdapter;
     private RetrofitResponseObserver<VideoList> mResponseObserver;
+    private int mColumnCount;
 
     public static void startActivity(Activity activity, ImageView imageView, Playlist playlist){
         Intent intent = new Intent(activity, SeriesEpisodesActivity.class);
@@ -83,6 +88,12 @@ public class SeriesEpisodesActivity extends BaseActivity
         setContentView(R.layout.activity_series);
         ButterKnife.inject(this);
 
+        mColumnCount = getResources().getInteger(R.integer.column_count);
+
+        Tracker t = AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+        t.setScreenName("EpisodesActivity");
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+
         Drawable gradient = mBackdropContainer.getForeground();
         gradient.setAlpha(0);
         ObjectAnimator anim = ObjectAnimator
@@ -98,8 +109,11 @@ public class SeriesEpisodesActivity extends BaseActivity
         Intent intent = getIntent();
         mPlaylist = (Playlist) intent.getSerializableExtra(PLAYLIST);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, mColumnCount));
+//        mRecyclerView.addItemDecoration(new SpacesItemDecoration(this,
+//                R.dimen.cardMarginHorizontal, R.dimen.cardMarginVertical));
         mInfinityScrollListener = new InfinityScrollListener(this);
+
         mRecyclerView.addOnScrollListener(mInfinityScrollListener);
         mAdapter = new VideoFeedArrayAdapter(this);
         mRecyclerView.setAdapter(mAdapter);

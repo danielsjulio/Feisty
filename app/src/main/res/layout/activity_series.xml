@@ -48,6 +48,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingLeft="@dimen/activity_horizontal_margin_extra"
+        android:paddingRight="@dimen/activity_horizontal_margin_extra"
+        android:clipToPadding="false"
         tools:visibility="gone"/>
     <com.feisty.ui.views.NetworkMetaView
         android:id="@+id/network_meta_view"
